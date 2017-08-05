@@ -1,7 +1,19 @@
-const music = require('../modules/music.js');
+const music = require('modules/music');
+const util = require('modules/util');
+const youtubeFilters = ["youtube.com","youtu.be",];
 module.exports.run = async (client,message,args) => {
 	console.log("Music Play");
-	music.play(client,message,args[0]);
+
+	util.parseArgstoID(args, (id) => {
+		if(id){
+			message.reply(id);
+			if(!client.music.get('voiceChannel')){
+				let voiceChannel = message.guild.channels.findAll('type','voice').find((v) => {console.log(v.name); return v.name==="Music"});
+				music.join(client,message,voiceChannel);
+			}
+			//music.play(client,message,id);
+		}
+	});
 }
 module.exports.help = {
 	name: "play",

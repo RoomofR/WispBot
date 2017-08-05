@@ -154,7 +154,7 @@ const youtubeFilters = ["youtube.com","youtu.be",];
 function isYoutube(str){return new RegExp(youtubeFilters.join("|")).test(str);}
 
 function search_video(query, callback){
-	request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q="+encodeURIComponent(query)+"&key="+settings.youtubeAPIKey, function(err,res,body){
+	request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q="+encodeURIComponent(query)+"&key="+process.env.YT_APIKEY, function(err,res,body){
 		var json = JSON.parse(body);
 		callback(json.items[0].id.videoId);
 	});

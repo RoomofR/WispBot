@@ -1,4 +1,3 @@
-const util = require('modules/util');
 const music = require('modules/music');
 module.exports.run = async (client,message,args) => {
 	music.leave(client,message);
