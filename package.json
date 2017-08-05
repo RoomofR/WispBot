@@ -1,0 +1,44 @@
+{
+  "name": "wispbot-main",
+  "version": "1.0.0",
+  "description": "WispBot-Main",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RoomofR/WispBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RoomofR/WispBot/issues"
+  },
+  "homepage": "https://github.com/RoomofR/WispBot#readme",
+  "dependencies": {
+    "app-module-path": "^2.2.0",
+    "discord.js": "^11.1.0",
+    "ejs": "^2.5.7",
+    "express": "^4.15.3",
+    "ffmpeg-binaries": "^3.2.2-3",
+    "file-type": "^5.2.0",
+    "get-youtube-id": "^1.0.0",
+    "giphy-api": "^1.2.6",
+    "har-schema": "^2.0.0",
+    "lowdb": "^0.16.2",
+    "mongodb": "^2.2.30",
+    "node-opus": "^0.2.6",
+    "request": "^2.81.0",
+    "sharp": "^0.18.2",
+    "simple-youtube-api": "^2.1.0",
+    "snekfetch": "^3.2.4",
+    "socket.io": "^2.0.3",
+    "supervisor": "^0.12.0",
+    "youtube-info": "^1.1.1",
+    "ytdl-core": "^0.15.0"
+  },
+  "engines": {
+    "node": "8.1.4"
+  }
+}

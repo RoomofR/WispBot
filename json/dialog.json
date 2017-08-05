@@ -1,0 +1,15 @@
+{
+	"search_err":[
+		{"str":"Good job. You broke me.",
+			"freq": 5},
+		{"str":"Well done. Here come the search results: *\"You are a horrible person.\"* That's what it says. We weren't even searching for that.",
+			"freq":1}
+	],
+
+	"leave_err":[
+		{"str":"",
+			"freq":11},
+		{"str":"OHHHHHHHHHHH",
+			"freq":1}
+	]
+}
