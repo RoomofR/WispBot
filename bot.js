@@ -1,9 +1,8 @@
 require('app-module-path').addPath(__dirname);
-const settings = require('./settings.json');
 const music = require('modules/music');
 const Discord = require('discord.js');
 const fs = require('fs')
-const prefix = settings.prefix;
+const prefix = require('./settings.json').prefix;
 require('modules/webClient').run();
 
 //MOVE LATER
@@ -149,7 +148,7 @@ client.on('message', async message => {
 
 });
 
-client.login(settings.token);
+client.login(process.env.TOKEN);
 
 const youtubeFilters = ["youtube.com","youtu.be",];
 function isYoutube(str){return new RegExp(youtubeFilters.join("|")).test(str);}
