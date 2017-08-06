@@ -2,6 +2,7 @@ module.exports.name = "util";
 const request = require('request');
 const sharp = require('sharp');
 const util = require('modules/util');
+const snekfetch = require('snekfetch');
 const getYoutubeID = require("get-youtube-id");
 const dialog = require("../json/dialog.json");
 const youtubeFilters = ["youtube.com","youtu.be",];
@@ -19,13 +20,14 @@ module.exports = {
 		return roulette[Math.floor(Math.random()*roulette.length)];
 	},
 
-	cropThumbnail: (id) => {
+	cropThumbnail: (id, callback) => {
 		snekfetch.get(`https://img.youtube.com/vi/${id}/0.jpg`)
 			.then(r => {
 				sharp(r.body)
 				.resize(480, 270)
 				.toBuffer((err, data, info) => {
-					return [{attachment: data, name: `${id}.jpg`}];
+					//return [{attachment: data, name: `${id}.jpg`}];
+					return callback(data);
 					//msg.channel.send({files:[{attachment: data, name: `${id}.jpg`}]});
 				});
 			});
@@ -70,7 +72,7 @@ module.exports = {
 			//console.log("youtube url detected");
 			return callback(getYoutubeID(id));
 		}else{ //Youtube ID
-			console.log("failed url test");
+			//console.log("failed url test");
 			request.get(`http://img.youtube.com/vi/${id}/0.jpg`,(err,res) => {
 				if(res.statusCode == 200){
 					//console.log("youtube id detected");

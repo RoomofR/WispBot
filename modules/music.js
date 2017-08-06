@@ -1,6 +1,8 @@
 module.exports.name = "music";
 const low = require('lowdb');
 const ytdl = require('ytdl-core');
+const imgurUploader  = require('imgur-uploader');
+const util = require('modules/util');
 const musicQueue = low('./json/musicQueue.json');
 musicQueue.defaults({ queue: []}).write();
 
@@ -51,19 +53,26 @@ module.exports = {
 		let voiceChannel = client.voiceConnections.find('channel',client.music.get('voiceChannel'));
 		if(voiceChannel){
 
-			ytdl.getInfo(url, (err, info) => {
-				console.log(`[Music] Playing ${info.title}`);
-				let musicEmbed = {
-					color : 7419784,
-					author: {name:"𝙉𝙤𝙬 𝙋𝙡𝙖𝙮𝙞𝙣𝙜..."},
-					title : info.title,
-					description : info.author.name,
-					url : url,
-					footer : {text:msg.author.username},
-					timestamp: new Date(),
-					thumbnail : {url:info.thumbnail_url}
-				};
-				msg.channel.send({embed:musicEmbed});
+			util.cropThumbnail(ytid, (thumbnail) => {
+				imgurUploader(thumbnail, {title: ytid}).then(data => {
+					ytdl.getInfo(url, (err, info) => {
+						console.log(`[Music] Playing ${info.title}`);
+						let musicEmbed = {
+							color : 7419784,
+							author: {name:"𝙉𝙤𝙬 𝙋𝙡𝙖𝙮𝙞𝙣𝙜..."},
+							title : info.title,
+							description : info.author.name,
+							url : url,
+							footer : {text:msg.author.username},
+							timestamp: new Date(),
+							thumbnail : {url:data.link}
+							//thumbnail : thumnail
+						};
+						//msg.channel.send("meow");
+						msg.channel.send({embed:musicEmbed});
+					});
+				});
+				
 			});
 
 			const song = ytdl(url, {filter:'audioonly'});
@@ -71,6 +80,7 @@ module.exports = {
 			client.music.set('dispatcher',dispatcher);
 
 			dispatcher.on('end', () =>{
+				client.music.set('dispatcher',null);
 				console.log("Song Ended!");
 			});
 		}

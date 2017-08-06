@@ -26,6 +26,7 @@
     "get-youtube-id": "^1.0.0",
     "giphy-api": "^1.2.6",
     "har-schema": "^2.0.0",
+    "imgur-uploader": "^4.2.1",
     "lowdb": "^0.16.2",
     "mongodb": "^2.2.30",
     "node-opus": "^0.2.6",
