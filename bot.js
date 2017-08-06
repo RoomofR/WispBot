@@ -1,24 +1,9 @@
 require('app-module-path').addPath(__dirname);
-const settings = require('./settings.json');
 const music = require('modules/music');
 const Discord = require('discord.js');
 const fs = require('fs')
-const prefix = settings.prefix;
+const prefix = require('./settings.json').prefix;
 require('modules/webClient').run();
-
-//MOVE LATER
-//fs
-const ytdl = require('ytdl-core');
-const request = require('request');
-const getYoutubeID = require("get-youtube-id");
-const fetchVideoInfo = require("youtube-info");
-
-var queue = [];
-var isPlaying = false;
-var dispatcher = null;
-var voiceChannel = null;
-var skipReq = 0;
-var skippers = [];
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -108,7 +93,7 @@ client.on('message', async message => {
 	if(cmd) cmd.run(client,message,args);
 
 	//MUSIC MODULE DEBUGGING --- TODO MOVE TO COMMANDS SCRIPTS
-	const member = message.member;
+	/*const member = message.member;
 	const mess = message.content.toLowerCase();
 	const argsM = message.content.split(' ').slice(1).join(" ");
 
@@ -146,16 +131,16 @@ client.on('message', async message => {
 			message.reply("You already voted to skip num nuts");
 		}
 	}
-
+*/
 });
 
-client.login(settings.token);
+client.login(process.env.TOKEN);
 
-const youtubeFilters = ["youtube.com","youtu.be",];
+/*const youtubeFilters = ["youtube.com","youtu.be",];
 function isYoutube(str){return new RegExp(youtubeFilters.join("|")).test(str);}
 
 function search_video(query, callback){
-	request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q="+encodeURIComponent(query)+"&key="+settings.youtubeAPIKey, function(err,res,body){
+	request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q="+encodeURIComponent(query)+"&key="+process.env.YT_APIKEY, function(err,res,body){
 		var json = JSON.parse(body);
 		callback(json.items[0].id.videoId);
 	});
@@ -212,4 +197,4 @@ function skip_song(message) {
 		skipReq = 0;
 		skippers= [];
 	}
-}
+}*/

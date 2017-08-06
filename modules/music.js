@@ -1,6 +1,8 @@
 module.exports.name = "music";
 const low = require('lowdb');
 const ytdl = require('ytdl-core');
+const imgurUploader  = require('imgur-uploader');
+const util = require('modules/util');
 const musicQueue = low('./json/musicQueue.json');
 musicQueue.defaults({ queue: []}).write();
 
@@ -51,36 +53,59 @@ module.exports = {
 		let voiceChannel = client.voiceConnections.find('channel',client.music.get('voiceChannel'));
 		if(voiceChannel){
 
-			ytdl.getInfo(url, (err, info) => {
-				console.log(`[Music] Playing ${info.title}`);
-				let musicEmbed = {
-					color : 7419784,
-					author: {name:"𝙉𝙤𝙬 𝙋𝙡𝙖𝙮𝙞𝙣𝙜..."},
-					title : info.title,
-					description : info.author.name,
-					url : url,
-					footer : {text:msg.author.username},
-					timestamp: new Date(),
-					thumbnail : {url:info.thumbnail_url}
-				};
-				msg.channel.send({embed:musicEmbed});
+			util.cropThumbnail(ytid, (thumbnail) => {
+				imgurUploader(thumbnail, {title: ytid}).then(data => {
+					ytdl.getInfo(url, (err, info) => {
+						console.log(`[Music] Playing ${info.title}`);
+						let musicEmbed = {
+							color : 7419784,
+							author: {name:"𝙉𝙤𝙬 𝙋𝙡𝙖𝙮𝙞𝙣𝙜..."},
+							title : info.title,
+							description : info.author.name,
+							url : url,
+							footer : {text:msg.author.username},
+							timestamp: new Date(),
+							thumbnail : {url:data.link}
+							//thumbnail : thumnail
+						};
+						//msg.channel.send("meow");
+						msg.channel.send({embed:musicEmbed});
+					});
+				});
+				
 			});
 
 			const song = ytdl(url, {filter:'audioonly'});
 			let dispatcher = voiceChannel.playStream(song, { passes : 12 });
 			client.music.set('dispatcher',dispatcher);
+			client.music.set('isPlaying',true);
 
 			dispatcher.on('end', () =>{
+				client.music.set('dispatcher',null);
+				client.music.set('isPlaying',false);
 				console.log("Song Ended!");
 			});
 		}
 	},
 
+	stop: (client,msg) => {
+		msg.channel.send(`Stopping Song...`);
+		client.music.get('dispatcher').end();
+		client.music.set('dispatcher',null);
+		console.log("Song Stoped!");
+	},
+
 	pause: (client,msg) => {
-		//TODO
+		msg.channel.send(util.roulette("pause"));
+		client.music.get('dispatcher').pause();
+		client.music.set('isPlaying',false);
+		console.log("Song Paused!");
 	},
 
 	resume: (client,msg) => {
-		//TODO
+		msg.channel.send(`Resuming Song...`);
+		client.music.get('dispatcher').resume();
+		client.music.set('isPlaying',true);
+		console.log("Song Paused!");
 	}
 }

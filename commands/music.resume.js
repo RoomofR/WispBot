@@ -1,14 +1,10 @@
+const music = require('modules/music');
 module.exports.run = async (client,message,args) => {
-	console.log("Music Resume");
-/*	const voiceChannel = message.member.voiceChannel ? message.member.voiceChannel : (message.guilf.voiceConnection ? message.guild.voiceConnection.channel : null);
-	
-	if (!voiceChannel || (!message.member.voiceChannel)) return message.reply("Please be in a voice channel first!");
-
-	if(!client.queues.get(message.guild.id).dispatcher.paused) return message.reply("It's already resumed idiot!");
-	//ZA WARUDO ! TOKI WO MODORE ! 
-	message.send('Resuming music...').then(()=>{
-		client.queues.get(message.guild.id).dispatcher.resume();
-	});*/
+	if(!client.music.get('isPlaying')){
+		music.resume(client,message);
+	}else{
+		message.reply("Music is already resumed!");
+	}
 }
 module.exports.help = {
 	name: "resume",

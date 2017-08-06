@@ -1,4 +1,4 @@
-var giphy = require('giphy-api')('4461219292df466aa171f618fc4f9a7e');
+var giphy = require('giphy-api')(process.env.GIPHY_APIKEY);
 module.exports.run = async (client,message,args) => {
 	giphy.random({
     tag: args.join(" "),

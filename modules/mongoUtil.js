@@ -1,8 +1,5 @@
 module.exports.name = "mongoUtil";
-
-const settings = require("../settings.json").db;
-
-const url = 'mongodb://wispbot:XQ8UrUlCUPMMduezIBtcQM0oIw1M82R0@ds131583.mlab.com:31583/wispdb';
+const url = `mongodb://wispbot:${process.env.KEY}@ds131583.mlab.com:31583/wispdb`;
 
 var MongoClient = require( 'mongodb' ).MongoClient;
 

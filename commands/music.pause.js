@@ -1,19 +1,15 @@
+const music = require('modules/music');
 module.exports.run = async (client,message,args) => {
-	console.log("Music Pause");
-/*	const voiceChannel = message.member.voiceChannel ? message.member.voiceChannel : (message.guilf.voiceConnection ? message.guild.voiceConnection.channel : null);
-	
-	if (!voiceChannel || (!message.member.voiceChannel)) return message.reply("Please be in a voice channel first!");
-
-	if(client.queues.get(message.guild.id).dispatcher.paused) return message.reply("It's already paused idiot!");
-	//ZA WARUDO ! TOKI WO TOMARE !
-	message.send('Pausing music...').then(()=>{
-		client.queues.get(message.guild.id).dispatcher.pause();
-	});*/
+	if(client.music.get('isPlaying')){
+		music.pause(client,message);
+	}else{
+		message.reply("Music is already paused!");
+	}
 }
 module.exports.help = {
 	name: "pause",
-	description: "TODO",
-	usage: "TODO"
+	description: "Paused the current song!",
+	usage: "/music pause"
 }
 
 module.exports.config = {
