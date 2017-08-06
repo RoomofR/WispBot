@@ -86,6 +86,10 @@ client.on('message', async message => {
 	//Sort Media
 	//client.modules.get("media").mediaSort(client,message);
 
+	//AI
+	if(message.content.includes("<@335953109123596289>"))
+		client.modules.get("ai").request(client,message);
+
 	//Command Handler
 	let messageArray = message.content.split(" ");
 	let command = messageArray[0];

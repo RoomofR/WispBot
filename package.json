@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/RoomofR/WispBot#readme",
   "dependencies": {
+    "apiai": "^4.0.3",
     "app-module-path": "^2.2.0",
     "discord.js": "^11.1.0",
     "ejs": "^2.5.7",
