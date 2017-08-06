@@ -7,6 +7,9 @@ const getYoutubeID = require("get-youtube-id");
 const dialog = require("../json/dialog.json");
 const youtubeFilters = ["youtube.com","youtu.be",];
 
+const YouTube = require('simple-youtube-api');
+const youtube = new YouTube(process.env.YT_APIKEY);
+
 module.exports = {
 
 	roulette: (dialogID) => {
@@ -24,7 +27,8 @@ module.exports = {
 		snekfetch.get(`https://img.youtube.com/vi/${id}/0.jpg`)
 			.then(r => {
 				sharp(r.body)
-				.resize(480, 270)
+				//.resize(480, 270)
+				.resize(140, 79)
 				.toBuffer((err, data, info) => {
 					//return [{attachment: data, name: `${id}.jpg`}];
 					return callback(data);

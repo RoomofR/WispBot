@@ -1,7 +1,35 @@
 const util = require('modules/util');
-
+const ytdl = require('ytdl-core');
+const fetchVideoInfo = require('youtube-info');
+const imgurUploader  = require('imgur-uploader');
 module.exports.run = async (client,message,args) => {
-	const search = args.join(" ");
+	console.time('function');
+	util.parseArgstoID(args, (id) => {
+		if(id){
+			let url = `http://youtu.be/${id}`;
+			util.cropThumbnail(id, (thumbnail) => {
+				imgurUploader(thumbnail, {title: id}).then(data => {
+					fetchVideoInfo(id, (err, info) => {
+					if(err) throw new Error(err);
+					//console.log(info);
+						let musicEmbed = {
+							color : 7419784,
+							author: {name:info.title},
+							description : `${info.owner}    ${id}`,
+							url : url,
+							footer : {text:message.author.username},
+							timestamp: new Date(),
+							thumbnail : {url:data.link}
+						};
+						message.channel.send({embed:musicEmbed});
+					});
+				});		
+			});
+			
+		}else{message.reply(`${util.roulette('search_err')} There was nothing found for **${search}**.`);}
+	});
+	
+		
 /*	youtube.searchVideos(search,1)
 		.then(results => {
 			if(results.length>0){
@@ -17,10 +45,10 @@ module.exports.run = async (client,message,args) => {
 				};
 				message.channel.send({embed:videoEmbed});
 			}else{
-				message.reply(`${util.roulette('search_err')} There was nothing found for **${search}**.`);
+				
 			}
 		}).catch(console.error);*/
-		
+
 }
 
 module.exports.help = {
