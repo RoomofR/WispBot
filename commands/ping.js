@@ -7,7 +7,7 @@ const url = `mongodb://wispbot:${process.env.KEY}@ds131583.mlab.com:31583/wispdb
 module.exports.run = async (client,message,args) => {
 
 	//Joke
-	if(util.contains(args[0],["ryan","roomofr","room_of_r"]))
+	if(args[0] && util.contains(args[0],["ryan","roomofr","room_of_r"]))
 		{let embed = {color: 15158332,timestamp: new Date(),author: {name: "Ryan [Ping Diagnostics]",},fields: [{name: "Client ⬌ Ryan",value: "18788ms"},{name: "Ryan ⬌ Sanity",value: "18788ms"},{name: "Ryan ⬌ Mainframe",value: "*Loading...*"}]};
 				return message.reply({embed:embed}).then(m=>{
 					setTimeout(()=>{embed.fields[2].value="[REDACTED]";m.edit({embed:embed})},2000);

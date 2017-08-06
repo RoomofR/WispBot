@@ -21,11 +21,4 @@ module.exports.request = async (client,message) => {
 	});
 
 	request.end();
-/*	request({
-		url: 'https://api.api.ai/v1/',
-		access_token: process.env.AI_APIKEY,
-
-	}, (err,res) => {
-		console.log(res.body);
-	});*/
 }
