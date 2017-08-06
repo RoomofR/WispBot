@@ -5,20 +5,6 @@ const fs = require('fs')
 const prefix = require('./settings.json').prefix;
 require('modules/webClient').run();
 
-//MOVE LATER
-//fs
-const ytdl = require('ytdl-core');
-const request = require('request');
-const getYoutubeID = require("get-youtube-id");
-const fetchVideoInfo = require("youtube-info");
-
-var queue = [];
-var isPlaying = false;
-var dispatcher = null;
-var voiceChannel = null;
-var skipReq = 0;
-var skippers = [];
-
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 client.help = new Discord.Collection();
@@ -107,7 +93,7 @@ client.on('message', async message => {
 	if(cmd) cmd.run(client,message,args);
 
 	//MUSIC MODULE DEBUGGING --- TODO MOVE TO COMMANDS SCRIPTS
-	const member = message.member;
+	/*const member = message.member;
 	const mess = message.content.toLowerCase();
 	const argsM = message.content.split(' ').slice(1).join(" ");
 
@@ -145,12 +131,12 @@ client.on('message', async message => {
 			message.reply("You already voted to skip num nuts");
 		}
 	}
-
+*/
 });
 
 client.login(process.env.TOKEN);
 
-const youtubeFilters = ["youtube.com","youtu.be",];
+/*const youtubeFilters = ["youtube.com","youtu.be",];
 function isYoutube(str){return new RegExp(youtubeFilters.join("|")).test(str);}
 
 function search_video(query, callback){
@@ -211,4 +197,4 @@ function skip_song(message) {
 		skipReq = 0;
 		skippers= [];
 	}
-}
+}*/

@@ -20,5 +20,12 @@
 		"freq":1},
 		{"str":"Can't stop song when there is no song playing!",
 		"freq":5}
+	],
+
+	"pause":[
+		{"str":"ZA WARUDO ! TOKI WO TOMARE ! Pausing music...",
+		"freq":1},
+		{"str":"Pausing music...",
+		"freq":11}
 	]
 }

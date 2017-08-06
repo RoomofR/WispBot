@@ -1,10 +1,8 @@
 const util = require('modules/util');
-const ytapi = require('simple-youtube-api');
-const youtube = new ytapi(process.env.YT_APIKEY);
 
 module.exports.run = async (client,message,args) => {
 	const search = args.join(" ");
-	youtube.searchVideos(search,1)
+/*	youtube.searchVideos(search,1)
 		.then(results => {
 			if(results.length>0){
 				let video = results[0];
@@ -21,7 +19,7 @@ module.exports.run = async (client,message,args) => {
 			}else{
 				message.reply(`${util.roulette('search_err')} There was nothing found for **${search}**.`);
 			}
-		}).catch(console.error);
+		}).catch(console.error);*/
 		
 }
 

@@ -78,9 +78,11 @@ module.exports = {
 			const song = ytdl(url, {filter:'audioonly'});
 			let dispatcher = voiceChannel.playStream(song, { passes : 12 });
 			client.music.set('dispatcher',dispatcher);
+			client.music.set('isPlaying',true);
 
 			dispatcher.on('end', () =>{
 				client.music.set('dispatcher',null);
+				client.music.set('isPlaying',false);
 				console.log("Song Ended!");
 			});
 		}
@@ -94,14 +96,16 @@ module.exports = {
 	},
 
 	pause: (client,msg) => {
-		msg.channel.send(`Pausing Song...`);
+		msg.channel.send(util.roulette("pause"));
 		client.music.get('dispatcher').pause();
+		client.music.set('isPlaying',false);
 		console.log("Song Paused!");
 	},
 
 	resume: (client,msg) => {
 		msg.channel.send(`Resuming Song...`);
 		client.music.get('dispatcher').resume();
+		client.music.set('isPlaying',true);
 		console.log("Song Paused!");
 	}
 }
