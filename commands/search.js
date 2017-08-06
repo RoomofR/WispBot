@@ -26,27 +26,6 @@ module.exports.run = async (client,message,args) => {
 			});
 		}else{message.reply(`${util.roulette('search_err')} There was nothing found for **${search}**.`);}
 	});
-	
-		
-/*	youtube.searchVideos(search,1)
-		.then(results => {
-			if(results.length>0){
-				let video = results[0];
-				let videoEmbed = {
-					color : 7419784,
-					author: {name:video.title},
-					description : `${video.channel.title}    [${video.id}]`,
-					url : video.url,
-					footer : {text:message.author.username},
-					timestamp: new Date(),
-					thumbnail : {url:`https://i3.ytimg.com/vi/${video.id}/sddefault.jpg`}
-				};
-				message.channel.send({embed:videoEmbed});
-			}else{
-				
-			}
-		}).catch(console.error);*/
-
 }
 
 module.exports.help = {

@@ -1,22 +1,18 @@
 module.exports.name = "music";
-const low = require('lowdb');
 const ytdl = require('ytdl-core');
 const imgurUploader  = require('imgur-uploader');
 const util = require('modules/util');
-const musicQueue = low('./json/musicQueue.json');
-musicQueue.defaults({ queue: []}).write();
-
 
 module.exports = {
 
 	initQueue: () => {
-		return musicQueue.get('queue')
+/*		return musicQueue.get('queue')
 			.sortBy('index')
-			.value();
+			.value();*/
 	},
 
 	addToQueue: (id,user,index) => {
-		musicQueue.get("queue")
+/*		musicQueue.get("queue")
 			.push({
 				"id":id,
 				"user":user,
@@ -24,7 +20,7 @@ module.exports = {
 				"time":new Date().getTime()+(dur*1000)
 			})
 			.write();
-		//TODO
+		//TODO*/
 	},
 
 	join: (client,msg,vc) => {
