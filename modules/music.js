@@ -86,11 +86,22 @@ module.exports = {
 		}
 	},
 
+	stop: (client,msg) => {
+		msg.channel.send(`Stopping Song...`);
+		client.music.get('dispatcher').end();
+		client.music.set('dispatcher',null);
+		console.log("Song Stoped!");
+	},
+
 	pause: (client,msg) => {
-		//TODO
+		msg.channel.send(`Pausing Song...`);
+		client.music.get('dispatcher').pause();
+		console.log("Song Paused!");
 	},
 
 	resume: (client,msg) => {
-		//TODO
+		msg.channel.send(`Resuming Song...`);
+		client.music.get('dispatcher').resume();
+		console.log("Song Paused!");
 	}
 }
