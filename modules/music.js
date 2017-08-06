@@ -48,31 +48,32 @@ module.exports = {
 		client.music.set('voiceChannel',null);
 	},
 
-	play: (client,msg,ytid) => {
-		let url = `http://youtu.be/${ytid}`;
+	play: (client,msg,video) => {
+		let id = video.id.videoId;
+		let url = `http://youtu.be/${id}`;
+
 		let voiceChannel = client.voiceConnections.find('channel',client.music.get('voiceChannel'));
 		if(voiceChannel){
 
-			util.cropThumbnail(ytid, (thumbnail) => {
-				imgurUploader(thumbnail, {title: ytid}).then(data => {
-					ytdl.getInfo(url, (err, info) => {
-						console.log(`[Music] Playing ${info.title}`);
-						let musicEmbed = {
-							color : 7419784,
-							author: {name:"𝙉𝙤𝙬 𝙋𝙡𝙖𝙮𝙞𝙣𝙜..."},
-							title : info.title,
-							description : info.author.name,
-							url : url,
-							footer : {text:msg.author.username},
-							timestamp: new Date(),
-							thumbnail : {url:data.link}
-							//thumbnail : thumnail
-						};
-						//msg.channel.send("meow");
-						msg.channel.send({embed:musicEmbed});
-					});
+			let musicEmbed = {
+				color : 7419784,
+				author: {name:"𝙉𝙤𝙬 𝙋𝙡𝙖𝙮𝙞𝙣𝙜..."},
+				title : video.snippet.title,
+				description : video.snippet.channelTitle,
+				url : url,
+				footer : {text:msg.author.username},
+				timestamp: new Date(),
+				thumbnail : {url:null}
+			};
+			msg.channel.send({embed:musicEmbed}).then(async msg => {
+
+				//Thumbnail
+				util.cropThumbnail(id, (thumbnail) => {
+					imgurUploader(thumbnail, {title: id}).then(data => {
+						musicEmbed.thumbnail.url = data.link;
+						msg.edit({embed:musicEmbed});
+					});		
 				});
-				
 			});
 
 			const song = ytdl(url, {filter:'audioonly'});

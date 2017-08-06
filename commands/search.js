@@ -1,31 +1,29 @@
 const util = require('modules/util');
 const ytdl = require('ytdl-core');
-const fetchVideoInfo = require('youtube-info');
 const imgurUploader  = require('imgur-uploader');
 module.exports.run = async (client,message,args) => {
-	console.time('function');
-	util.parseArgstoID(args, (id) => {
-		if(id){
+	util.parseArgstoID(args, (video) => {
+		if(video){
+			let id = video.id.videoId;
 			let url = `http://youtu.be/${id}`;
-			util.cropThumbnail(id, (thumbnail) => {
-				imgurUploader(thumbnail, {title: id}).then(data => {
-					fetchVideoInfo(id, (err, info) => {
-					if(err) throw new Error(err);
-					//console.log(info);
-						let musicEmbed = {
-							color : 7419784,
-							author: {name:info.title},
-							description : `${info.owner}    ${id}`,
-							url : url,
-							footer : {text:message.author.username},
-							timestamp: new Date(),
-							thumbnail : {url:data.link}
-						};
-						message.channel.send({embed:musicEmbed});
-					});
-				});		
+
+			let musicEmbed = {
+				color : 7419784,
+				author: {name:video.snippet.title},
+				description : `${video.snippet.channelTitle}    ${id}`,
+				url : url,
+				footer : {text:message.author.username},
+				timestamp: new Date(),
+				thumbnail : {url:null}
+			};
+			message.channel.send({embed:musicEmbed}).then(msg => {
+				util.cropThumbnail(id, (thumbnail) => {
+					imgurUploader(thumbnail, {title: id}).then(data => {
+						musicEmbed.thumbnail.url = data.link;
+						msg.edit({embed:musicEmbed});
+					});		
+				});
 			});
-			
 		}else{message.reply(`${util.roulette('search_err')} There was nothing found for **${search}**.`);}
 	});
 	
