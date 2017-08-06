@@ -24,10 +24,9 @@ module.exports.run = async (client,message,args) => {
 			}
 		]
 	};
-	message.channel.send({embed:pingEmbed}).then(async msg => {
+	message.channel.send({embed:pingEmbed}).then(async msg => {/
 
 		//Bot Client
-		//const m = await message.channel.send("PONG");
 		pingEmbed.fields[0].value=`Latency: ${(msg.createdTimestamp - message.createdTimestamp)}ms   API: ${client.ping}ms`;
 		msg.edit({embed:pingEmbed});
 
