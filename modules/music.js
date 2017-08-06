@@ -76,7 +76,7 @@ module.exports = {
 			});
 
 			const song = ytdl(url, {filter:'audioonly'});
-			let dispatcher = voiceChannel.playStream(song, { passes : 12 });
+			let dispatcher = voiceChannel.playStream(song, { passes : 5 });
 			client.music.set('dispatcher',dispatcher);
 			client.music.set('isPlaying',true);
 
