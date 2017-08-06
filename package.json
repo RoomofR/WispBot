@@ -31,11 +31,9 @@
     "remove": "^0.1.5",
     "request": "^2.81.0",
     "sharp": "^0.18.2",
-    "simple-youtube-api": "^2.1.0",
     "snekfetch": "^3.2.4",
     "socket.io": "^2.0.3",
     "supervisor": "^0.12.0",
-    "youtube-info": "^1.1.1",
     "ytdl-core": "^0.15.0"
   },
   "engines": {
