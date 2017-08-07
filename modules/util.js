@@ -2,9 +2,13 @@ module.exports.name = "util";
 const request = require('request');
 const sharp = require('sharp');
 const snekfetch = require('snekfetch');
-const getYoutubeID = require("get-youtube-id");
+const Jimp = require("jimp");
 const dialog = require("../json/dialog.json");
 const youtubeFilters = ["youtube.com","youtu.be",];
+
+const mongodb = require('mongodb');
+const MongoClient = require( 'mongodb' ).MongoClient;
+const url = `mongodb://wispbot:${process.env.KEY}@ds131583.mlab.com:31583/wispdb`;
 
 module.exports = {
 	isInteger:isInteger,
@@ -14,7 +18,9 @@ module.exports = {
 	fetchVideoInfo:fetchVideoInfo,
 	fetchPlaylistInfo:fetchPlaylistInfo,
 	parseArgstoID:parseArgstoID,
-	parseUri:parseUri
+	parseUri:parseUri,
+	splitString:splitString,
+	captionQuoteImage:captionQuoteImage
 }
 
 function isInteger(x) {return (x | 0) === x;}
@@ -96,10 +102,7 @@ function fetchPlaylistInfo(id,call){
 		getPageIds(id,pageToken,(ids,token,total) => {
 			numOfIds=total;
 			pageToken=token;
-			//console.log(`Found: ${ids.length}`);
 			playlistIds = playlistIds.concat(ids);
-			//console.log(playlistIds.length+"/"+numOfIds);
-
 			if(playlistIds.length < numOfIds)
 				getPlaylistIds(playlistId, (p,call) => {return callback(p,call)});
 			else
@@ -117,7 +120,6 @@ function parseArgstoID(args, callback){
 	//Check if youtube url
 	if(new RegExp(youtubeFilters.join("|")).test(id.toLowerCase())){
 		let qeury = parseUri(id).queryKey;
-
 		if(query.v)
 			return callback(query.v);
 		else if(query.list){
@@ -175,4 +177,59 @@ function parseUri (str) {
 	});
 
 	return uri;
+}
+
+function splitString(str) {
+	//var char = 21;
+	var char = 42;
+	var len = str.length;
+	var lines = [];
+	var start = 0;
+	var end = 0;
+
+	while(end < len-1){
+		end+=char-1;
+		origEnd=end;
+
+		if(end>=len){
+			end=len;
+		}else{
+			while(str.charAt(end) != " "){
+				end--;
+
+				if(end <= start){
+					end = origEnd;
+					break;
+				}
+					
+			}
+		}
+		lines.push(str.substring(start,end));
+		start=end;
+	}
+	return lines;
+}
+
+function captionQuoteImage(img,caption,callback) {
+	Jimp.read(img)
+		.then(function (image) {
+		    loadedImage = image;
+		    return Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+		})
+		.then(function (font) {
+
+			let height = 10;
+			splitString(caption).forEach((line) => {
+				loadedImage.print(font, 5, height, line);
+				height+=32;
+			});
+
+		    //loadedImage.write('output.jpg');
+		    loadedImage.getBuffer(Jimp.MIME_PNG,(err,data) => {
+		    	callback(data);
+		    });
+		})
+		.catch(function (err) {
+		    console.error(err);
+		});
 }

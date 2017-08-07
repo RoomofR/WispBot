@@ -6,6 +6,7 @@ const prefix = require('./settings.json').prefix;
 //Web Client
 require('modules/webClient').run();
 
+const util = require('modules/util');
 //console.log(require('modules/util').parseUri('https://www.youtube.com/watch?v=sN8WUtc1W7E&list=PLoVt_E2Bf75HnPfpj7SiJSr_rNP8lPzCA&index=43'));
 
 //console.log(require('modules/util').parseUri('https://www.youtube.com/playlist?list=PLoVt_E2Bf75HnPfpj7SiJSr_rNP8lPzCA'));
@@ -109,3 +110,32 @@ client.on('message', async message => {
 	if(cmd) cmd.run(client,message,args);
 });
 client.login(process.env.TOKEN);
+
+//Jimp Test
+var Jimp = require("jimp");
+
+var fileName = 'assets/quoteImgs/ryan/pp.jpg';
+var imageCaption = "You merely adopted the driver, I was born with him moulded by him. I didn't come out of the car until I was a man. It was nothing to be but slow";
+var loadedImage;
+
+/*Jimp.read(fileName)
+    .then(function (image) {
+        loadedImage = image;
+        return Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+    })
+    .then(function (font) {
+
+    	let height = 10;
+    	util.splitString(imageCaption).forEach((line) => {
+    		loadedImage.print(font, 5, height, line);
+    		height+=32;
+    	});
+
+        
+        //loadedImage.print(font, 5, 10+32, "WWWWWWWWWWWWWWWWWWWWW")
+        //loadedImage.print(font, 5, 10+32+32, "WWWWWWWWWWWWWWWWWWWWW")
+                   loadedImage.write('output.jpg');
+    })
+    .catch(function (err) {
+        console.error(err);
+    });*/
