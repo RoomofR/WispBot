@@ -1,10 +1,20 @@
 const http = require('http');
-
+const util = require('modules/util');
 const mongodb = require('mongodb');
 const MongoClient = require( 'mongodb' ).MongoClient;
 const url = `mongodb://wispbot:${process.env.KEY}@ds131583.mlab.com:31583/wispdb`;
 
 module.exports.run = async (client,message,args) => {
+
+	//Joke
+	if(args[0] && util.contains(args[0],["ryan","roomofr","room_of_r"]))
+		{let embed = {color: 15158332,timestamp: new Date(),author: {name: "Ryan [Ping Diagnostics]",},fields: [{name: "Client ⬌ Ryan",value: "18788ms"},{name: "Ryan ⬌ Sanity",value: "18788ms"},{name: "Ryan ⬌ Mainframe",value: "*Loading...*"}]};
+				return message.reply({embed:embed}).then(m=>{
+					setTimeout(()=>{embed.fields[2].value="[REDACTED]";m.edit({embed:embed})},2000);
+					setTimeout(()=>{embed.fields[2].value="18788ms";m.edit({embed:embed})},1000);
+					//setTimeout(()=>{m.edit("[REDACTED]")},5000);
+				});}
+
 	let pingEmbed = {
 		color: 7419784,
 		timestamp: new Date(),
@@ -27,7 +37,6 @@ module.exports.run = async (client,message,args) => {
 	message.channel.send({embed:pingEmbed}).then(async msg => {
 
 		//Bot Client
-		//const m = await message.channel.send("PONG");
 		pingEmbed.fields[0].value=`Latency: ${(msg.createdTimestamp - message.createdTimestamp)}ms   API: ${client.ping}ms`;
 		msg.edit({embed:pingEmbed});
 

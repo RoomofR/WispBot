@@ -1,16 +1,22 @@
 require('app-module-path').addPath(__dirname);
-const music = require('modules/music');
 const Discord = require('discord.js');
-const fs = require('fs')
+const fs = require('fs');
 const prefix = require('./settings.json').prefix;
+
+//Web Client
 require('modules/webClient').run();
 
+require('modules/memeRater').run();
+
+//Client/Modules/Commands
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 client.help = new Discord.Collection();
 client.modules = new Discord.Collection();
+
+//Music
 client.music = new Discord.Collection();
-client.music.set("queue",music.initQueue());
+client.music.set("queue",require('modules/music').initQueue());
 
 //Load Commands
 fs.readdir("./commands/", (err, files) => {
@@ -82,6 +88,10 @@ client.on('message', async message => {
 	//Sort Media
 	//client.modules.get("media").mediaSort(client,message);
 
+	//AI
+	if(message.content.includes("<@335953109123596289>"))
+		client.modules.get("ai").request(client,message);
+
 	//Command Handler
 	let messageArray = message.content.split(" ");
 	let command = messageArray[0];
@@ -133,68 +143,4 @@ client.on('message', async message => {
 	}
 */
 });
-
 client.login(process.env.TOKEN);
-
-/*const youtubeFilters = ["youtube.com","youtu.be",];
-function isYoutube(str){return new RegExp(youtubeFilters.join("|")).test(str);}
-
-function search_video(query, callback){
-	request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q="+encodeURIComponent(query)+"&key="+process.env.YT_APIKEY, function(err,res,body){
-		var json = JSON.parse(body);
-		callback(json.items[0].id.videoId);
-	});
-}
-
-function getID(str, cb){
-	if(isYoutube(str)){
-		cb(getYoutubeID(str));
-	}else{
-		search_video(str, (id) => {
-			cb(id);
-		})
-	}
-}
-
-function add_to_queue(strID){
-	if(isYoutube(strID)){
-		queue.push(getYoutubeID(strID));
-	}else{
-		queue.push(strID);
-	}
-}
-
-function playMusic(id,message){
-	voiceChannel = message.member.voiceChannel;
-	voiceChannel.join().then((connection) => {
-		stream = ytdl("https://www.youtube.com/watch?v="+id, {
-			filter:'audioonly'
-		});
-		skipReq = 0;
-		skippers = [];
-
-		dispatcher = connection.playStream(stream, { passes : 12 });
-
-		dispatcher.on('end', () =>{
-			skipReq = 0;
-			skippers = [];
-			queue.shift();
-			if(queue.length===0){
-				queue=[];
-				isPlaying=false;
-			}else{
-				playMusic(queue[0], message);
-			}
-		})
-	})
-}
-
-function skip_song(message) {
-	dispatcher.end();
-	if(queue.length>1){
-		playMusic(queue[0], message);
-	}else{
-		skipReq = 0;
-		skippers= [];
-	}
-}*/

@@ -14,5 +14,5 @@ module.exports.help = {
 
 module.exports.config = {
 	enabled: true,
-	aliases: []
+	aliases: ['=', '||']
 }
