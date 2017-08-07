@@ -6,7 +6,13 @@ const prefix = require('./settings.json').prefix;
 //Web Client
 require('modules/webClient').run();
 
-require('modules/memeRater').run();
+//console.log(require('modules/util').parseUri('https://www.youtube.com/watch?v=sN8WUtc1W7E&list=PLoVt_E2Bf75HnPfpj7SiJSr_rNP8lPzCA&index=43'));
+
+//console.log(require('modules/util').parseUri('https://www.youtube.com/playlist?list=PLoVt_E2Bf75HnPfpj7SiJSr_rNP8lPzCA'));
+
+
+//require('modules/util').fetchVideoInfo('5SQhfkpX9bc');
+//require('modules/util').fetchPlaylistInfo('PLoVt_E2Bf75HnPfpj7SiJSr_rNP8lPzCA',(playlist)=>{});
 
 //Client/Modules/Commands
 const client = new Discord.Client();
@@ -101,46 +107,5 @@ client.on('message', async message => {
 
 	let cmd = client.commands.get(command.slice(prefix.length));
 	if(cmd) cmd.run(client,message,args);
-
-	//MUSIC MODULE DEBUGGING --- TODO MOVE TO COMMANDS SCRIPTS
-	/*const member = message.member;
-	const mess = message.content.toLowerCase();
-	const argsM = message.content.split(' ').slice(1).join(" ");
-
-	if(mess.startsWith(prefix+"play")){
-		if(queue.length > 0 || isPlaying){
-			getID(argsM, (id) => {
-				add_to_queue(id);
-				fetchVideoInfo(id, (err, videoInfo) => {
-					if(err) throw new Error(err);
-					message.reply(" added to queue **" + videoInfo.title + "**");
-				})
-			})
-		}else{
-			isPlaying = true;
-			getID(argsM, (id) => {
-				queue.push("placeholder");
-				playMusic(id, message);
-				fetchVideoInfo(id, (err, videoInfo) => {
-					if(err) throw new Error(err);
-					message.reply(" now playing **" + videoInfo.title + "**");
-				})
-			})
-		}
-	}else if(mess.startsWith(prefix+"skip")){
-		if(skippers.indexOf(message.author.id) === -1){
-			skippers.push(message.author.id);
-			skipReq++;
-			if(skipReq >= Math.ceil((voiceChannel.members.size - 1)/2)){
-				skip_song(message);
-				message.reply("Your skip was noticed by senpai. Skipping now...");
-			}else{
-				message.reply("Your skip was noticed by senpai. You need **"+Math.ceil((voiceChannel.members.size - 1)/2)-skipReq+"** votes");
-			}
-		}else{
-			message.reply("You already voted to skip num nuts");
-		}
-	}
-*/
 });
 client.login(process.env.TOKEN);
