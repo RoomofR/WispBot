@@ -22,6 +22,7 @@
     "discord.js": "^11.1.0",
     "ejs": "^2.5.7",
     "express": "^4.15.3",
+    "ffmpeg-binaries": "^3.2.2-3",
     "file-type": "^5.2.0",
     "get-youtube-id": "^1.0.0",
     "giphy-api": "^1.2.6",
