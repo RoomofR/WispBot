@@ -3,24 +3,26 @@ const ytdl = require('ytdl-core');
 const imgurUploader  = require('imgur-uploader');
 const util = require('modules/util');
 
+const mongodb = require('mongodb');
+const MongoClient = require( 'mongodb' ).MongoClient;
+const url = `mongodb://wispbot:${process.env.KEY}@ds131583.mlab.com:31583/wispdb`;
+
 module.exports = {
 
 	initQueue: () => {
-/*		return musicQueue.get('queue')
+		/*return musicQueue.get('queue')
 			.sortBy('index')
 			.value();*/
 	},
 
-	addToQueue: (id,user,index) => {
-/*		musicQueue.get("queue")
-			.push({
-				"id":id,
-				"user":user,
-				"index":index,
-				"time":new Date().getTime()+(dur*1000)
-			})
-			.write();
-		//TODO*/
+	addToQueue: (video,user) => {
+		
+		MongoClient.connect(url, (err,db) => {
+			db.collection("musicqueue").count({},(err,count) => {
+				video["index"]=count;
+				db.collection("musicqueue").insertOne(video, (err) =>{ if(err)console.error(err)});
+			});
+		});
 	},
 
 	join: (client,msg,vc) => {

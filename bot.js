@@ -6,6 +6,8 @@ const prefix = require('./settings.json').prefix;
 //Web Client
 require('modules/webClient').run();
 
+require('modules/memeRater').run();
+
 //Client/Modules/Commands
 const client = new Discord.Client();
 client.commands = new Discord.Collection();

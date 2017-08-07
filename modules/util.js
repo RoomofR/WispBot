@@ -1,7 +1,6 @@
 module.exports.name = "util";
 const request = require('request');
 const sharp = require('sharp');
-const util = require('modules/util');
 const snekfetch = require('snekfetch');
 const getYoutubeID = require("get-youtube-id");
 const dialog = require("../json/dialog.json");
