@@ -180,7 +180,10 @@ function join(msg,vc){
 }
 
 function leave(msg){
-	dispatcher.end('force_stop');
+
+	if(dispatcher)
+		dispatcher.end('force_stop');
+
 	if(channel==null){
 		let voiceChannel = msg.guild.channels.findAll('type','voice').find((v) => {console.log(v.name); return v.name==="Music"});
 		voiceChannel.join().then(connection => {
