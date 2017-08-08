@@ -28,7 +28,8 @@ module.exports = {
 	resume:resume,
 	skip:skip,
 	setVolume:setVolume,
-	list:list
+	list:list,
+	clear:clear
 }
 
 function initSettings(){
@@ -48,6 +49,25 @@ function list(callback){
 		});
 		db.close();
 	});
+}
+
+var clearPwd = util.makeid();
+function clear(msg,pwd){
+	if(pwd==clearPwd){
+		console.log("[MUSIC] CLEARNING MUSIC QUEUE!!! "+msg.author.username);
+		msg.channel.send("Clearing queue...").then(m=>{
+			MongoClient.connect(url, (err,db) => {
+				db.collection("musicqueue").deleteMany({},(err)=>{
+					if(err)console.error(err);
+					m.edit(`**${msg.author.username}** has cleared the queue!`);
+				});
+				db.close();
+			});
+		});
+	}else{
+		clearPwd = util.makeid();
+		msg.reply(`**Are your sure you want to clear the music queue?**\n If so type the command again with this id: \`\`\`${clearPwd}\`\`\``)
+	}
 }
 
 /*addToQueue(["meo1a","meo2a","meo3a","meo4a"],"Meow Man",true,(err)=>{

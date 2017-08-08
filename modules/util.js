@@ -20,7 +20,8 @@ module.exports = {
 	parseArgstoID:parseArgstoID,
 	parseUri:parseUri,
 	splitString:splitString,
-	captionQuoteImage:captionQuoteImage
+	captionQuoteImage:captionQuoteImage,
+	makeid:makeid
 }
 
 function isInteger(x) {return (x | 0) === x;}
@@ -266,4 +267,14 @@ function captionQuoteImage(img,caption,callback) {
 		.catch(function (err) {
 		    console.error(err);
 		});
+}
+
+function makeid() {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < 5; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
 }
