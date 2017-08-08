@@ -270,7 +270,7 @@ function setVolume(msg,vol){
 	msg.channel.send(`Setting volume to ${vol}%`).then(()=>{
 		volume = vol / 100;
 		if(dispatcher)
-			dispatcher.setVolume(volume/100);
+			dispatcher.setVolume(volume);
 
 		MongoClient.connect(url, (err,db) => {
 			db.collection("settings").updateOne({var:"music"},{$set:{volume:volume}});
