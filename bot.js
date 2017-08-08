@@ -22,8 +22,7 @@ client.help = new Discord.Collection();
 client.modules = new Discord.Collection();
 
 //Music
-client.music = new Discord.Collection();
-client.music.set("queue",require('modules/music').initQueue());
+require('modules/music').initSettings();
 
 //Load Commands
 fs.readdir("./commands/", (err, files) => {

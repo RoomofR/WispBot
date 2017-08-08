@@ -4,7 +4,7 @@ const sharp = require('sharp');
 const snekfetch = require('snekfetch');
 const Jimp = require("jimp");
 const dialog = require("../json/dialog.json");
-const youtubeFilters = ["youtube.com","youtu.be",];
+const youtubeFilters = ["youtube.com","youtu.be"];
 
 const mongodb = require('mongodb');
 const MongoClient = require( 'mongodb' ).MongoClient;
@@ -58,8 +58,8 @@ function fetchVideoInfo(id, callback){
 		qs:{
 			id: id,
 			key: process.env.YT_APIKEY,
-			fields: 'items(id,snippet(publishedAt,title,channelTitle,channelId),statistics(viewCount))',
-			part: 'snippet,statistics'
+			fields: 'items(id,snippet(title,channelTitle))',
+			part: 'id,snippet'
 		}
 	},(err,res,body) => {
 		if(err) console.error(err);
@@ -68,11 +68,16 @@ function fetchVideoInfo(id, callback){
 	});
 }
 
+//fetchPlaylistInfo('PLoVt_E2Bf75HnPfpj7SiJSr_rNP8lPzCA', ()=>{});
+
 function fetchPlaylistInfo(id,call){
 	
 	const parsePlaylistDataToIds = (data) => {
 		ids=[];
-		data.items.forEach((i) => {ids.push(i.contentDetails.videoId);});
+		data.items.forEach((i) => {ids.push({
+			"title":i.snippet.title,
+			"id":i.snippet.resourceId.videoId
+		});});
 		return ids;
 	};
 
@@ -85,11 +90,11 @@ function fetchPlaylistInfo(id,call){
 				key: process.env.YT_APIKEY,
 				maxResults:50,
 				pageToken:page,
-				fields: 'pageInfo(totalResults),nextPageToken,items(contentDetails(videoId))',
-				part: 'contentDetails'
+				fields: 'pageInfo(totalResults),nextPageToken,items(snippet(resourceId(videoId),title))',
+				part: 'snippet'
 			}
 		},(err,res,body) => {
-			if(err) console.error(err);
+			if(err) {return console.error(err)};
 			var json = JSON.parse(body);
 			return callback(parsePlaylistDataToIds(json),json.nextPageToken,json.pageInfo.totalResults);
 		});
@@ -116,12 +121,19 @@ function fetchPlaylistInfo(id,call){
 }
 
 function parseArgstoID(args, callback){
-	let id=args[0];
+	let id=args.join(" ");
+	console.log("")
 	//Check if youtube url
 	if(new RegExp(youtubeFilters.join("|")).test(id.toLowerCase())){
-		let qeury = parseUri(id).queryKey;
-		if(query.v)
-			return callback(query.v);
+		let query = parseUri(id).queryKey;
+		if(query.v){
+			fetchVideoInfo(query.v,(i)=>{
+				return callback({
+					id:i.id,
+					title:i.snippet.title
+				});
+			});
+		}
 		else if(query.list){
 			fetchPlaylistInfo(query.list, (ids => {return callback(ids);}));
 		}
@@ -132,23 +144,42 @@ function parseArgstoID(args, callback){
 		request.get(`http://img.youtube.com/vi/${id}/0.jpg`,(err,res) => {
 			if(res.statusCode == 200){
 				//console.log("youtube id detected");
-				return callback(id);
+				fetchVideoInfo(id,(i)=>{
+					return callback({
+						id:i.id,
+						title:i.snippet.title
+					});
+				});
+			}else if(id.length==34){
+				fetchPlaylistInfo(id, (ids => {return callback(ids);}));
 			}else{
-				let api = `https://www.googleapis.com/youtube/v3/search?type=video&q=${encodeURIComponent(args.join(" "))}&key=${process.env.YT_APIKEY}`;
-				api += "&part=snippet&fields=items(id(videoId),snippet(publishedAt,title,channelTitle,channelId))&maxResults=1";
-				request(api, (err,res,body) => {
-					//console.log(JSON.parse(body).items.length);
+				request({
+					method: 'GET',
+					uri: 'https://www.googleapis.com/youtube/v3/search',
+					qs:{
+						type: 'video',
+						q:args.join(" "),
+						key: process.env.YT_APIKEY,
+						maxResults:1,
+						fields: 'items(id(videoId),snippet(title))',
+						part: 'snippet'
+					}
+				},(err,res,body) => {
+					//console.log(JSON.parse(body).items[0]);
 					let i = JSON.parse(body).items[0];
 					if(i){
 						//console.log("youtube query detected");
-						return callback(i);
+						return callback({
+							id:i.id.videoId,
+							title:i.snippet.title
+						});
 					}else{
 						//console.log("No youtube video detected");
 						return callback(null);
 					}
 				});
 			}
-		})
+		});
 	}
 }
 
@@ -175,6 +206,9 @@ function parseUri (str) {
 	uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
 		if ($1) uri[o.q.name][$1] = $2;
 	});
+
+	if(str.includes('youtu.be'))
+		uri.queryKey.v = str.split('/')[3];
 
 	return uri;
 }

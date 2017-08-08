@@ -37,5 +37,5 @@ module.exports.help = {
 
 module.exports.config = {
 	enabled: true,
-	aliases: ['q']
+	aliases: []
 }
