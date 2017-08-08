@@ -21,7 +21,8 @@ module.exports = {
 	parseUri:parseUri,
 	splitString:splitString,
 	captionQuoteImage:captionQuoteImage,
-	makeid:makeid
+	makeid:makeid,
+	indexShuffle:indexShuffle
 }
 
 function isInteger(x) {return (x | 0) === x;}
@@ -277,4 +278,16 @@ function makeid() {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return text;
+}
+
+function indexShuffle(len){
+	let index = [...Array(len).keys()];
+	var m = index.length, t, i;
+	while (m) {
+		i = Math.floor(Math.random() * m--);
+		t = index[m];
+		index[m] = index[i];
+		index[i] = t;
+	}
+	return index;
 }

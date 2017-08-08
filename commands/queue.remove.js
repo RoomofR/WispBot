@@ -1,5 +1,10 @@
+const music = require('modules/music');
 module.exports.run = async (client,message,args) => {
-	//TODO
+	message.channel.send(`Removing song number ${args[0]} from Queue...`).then(m=>{
+		music.remove(args[0],(title)=>{
+			m.edit(`**Removed** ${args[0]} : ${title} from Queue!`);
+		});
+	});
 }
 
 module.exports.help = {

@@ -16,7 +16,7 @@ module.exports.run = async (client,message,args) => {
 module.exports.help = {
 	name: "queue",
 	description: "For all your qeueuing needs.",
-	usage: "/queue [add|remove|list]"
+	usage: "/queue [add|remove|list|clear|shuffle]"
 }
 
 module.exports.config = {

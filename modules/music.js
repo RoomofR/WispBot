@@ -29,7 +29,9 @@ module.exports = {
 	skip:skip,
 	setVolume:setVolume,
 	list:list,
-	clear:clear
+	clear:clear,
+	shuffle:shuffle,
+	remove:remove
 }
 
 function initSettings(){
@@ -44,10 +46,20 @@ function initSettings(){
 function list(callback){
 	MongoClient.connect(url, (err,db) => {
 		db.collection("musicqueue").find({index:{ $lt: 10 }}).sort({index:1}).toArray((err,results)=>{
-			if(err) return callback(err);
-			return callback(results);
+
+			db.collection("musicqueue").count({},(err,count) => {
+				if(err) return callback(err);
+				return callback(results,count);
+			});
+			
 		});
-		db.close();
+	});
+}
+
+function remove(index,callback){
+	console.log(index);
+	getSongFromQueue(parseInt(index)-1,true,(song) => {
+		return(callback(song.title));
 	});
 }
 
@@ -61,13 +73,27 @@ function clear(msg,pwd){
 					if(err)console.error(err);
 					m.edit(`**${msg.author.username}** has cleared the queue!`);
 				});
-				db.close();
 			});
 		});
 	}else{
 		clearPwd = util.makeid();
 		msg.reply(`**Are your sure you want to clear the music queue?**\n If so type the command again with this id: \`\`\`${clearPwd}\`\`\``)
 	}
+}
+
+function shuffle(callback){
+	MongoClient.connect(url, (err,db) => {
+		db.collection('musicqueue').find().sort({index:1}).toArray((err,results)=>{
+			if(err) console.error(err);
+			let total = results.length;
+			let index = util.indexShuffle(total);
+			results.forEach((s,i)=>{
+				db.collection('musicqueue').updateOne({_id:s._id},{$set:{index:index[i]}},(err) => {
+					if(i>=total-1)return callback(total);
+				});	
+			});
+		});
+	});
 }
 
 /*addToQueue(["meo1a","meo2a","meo3a","meo4a"],"Meow Man",true,(err)=>{
@@ -139,10 +165,10 @@ function getSongFromQueue(index,shift,callback){
 			if(shift){
 				db.collection("musicqueue").deleteOne({index:index},(err)=>{
 						db.collection("musicqueue").updateMany({index:{$gt:index}},{$inc:{index:-1}},(err)=>{
-						callback(result);
+						return(callback(result));
 					});
 				});
-			}else callback(result);
+			}else return(callback(result));
 		});
 	});
 }
