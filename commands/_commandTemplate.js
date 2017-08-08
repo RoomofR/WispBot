@@ -15,3 +15,15 @@ module.exports.config = {
 	enabled: false,
 	aliases: []
 }
+
+//Faisal's TODO Commands
+/*======================
+/onichan
+it plays a UHHHHHHHHHH
+
+/widow
+plays a sniper shot
+
+/pwnd
+to play pwnd music
+======================*/

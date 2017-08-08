@@ -1,17 +1,15 @@
 const music = require('modules/music');
-
 module.exports.run = async (client,message,args) => {
-	console.log("Music Skip");
-	music.skip();
-	message.channel.send("Skipping song...");
+	music.clear(message,args[0]);
 }
+
 module.exports.help = {
-	name: "skip",
+	name: "clear",
 	description: "TODO",
 	usage: "TODO"
 }
 
 module.exports.config = {
 	enabled: true,
-	aliases: []
+	aliases: ['c']
 }

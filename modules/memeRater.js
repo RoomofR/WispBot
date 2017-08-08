@@ -3,6 +3,7 @@ module.exports.name = "memeRater";
 const mongodb = require('mongodb');
 const MongoClient = require( 'mongodb' ).MongoClient;
 const url = `mongodb://wispbot:${process.env.KEY}@ds131583.mlab.com:31583/wispdb`;
+//const key = process.env.
 
 module.exports.run = async () => {
 	

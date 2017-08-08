@@ -1,7 +1,9 @@
 const music = require('modules/music');
+const util = require('modules/util');
 module.exports.run = async (client,message,args) => {
-	if(client.music.get('isPlaying')){
-		music.pause(client,message);
+	if(!music.isPaused()){
+		music.pause();
+		message.channel.send(util.roulette("pause"));
 	}else{
 		message.reply("Music is already paused!");
 	}
