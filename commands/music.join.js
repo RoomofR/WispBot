@@ -4,7 +4,7 @@ module.exports.run = async (client,message,args) => {
 	if(args.length>0){//Specified channel
 		let voiceChannel = message.guild.channels.findAll('type','voice').find((v) => {return v.name===args.join(" ")});
 		if(voiceChannel){
-			music.join(client,message,voiceChannel);
+			music.join(message,voiceChannel);
 		}else message.reply(`**Could not find voice channel called:** \`\`\`${args.join(" ")}\`\`\``);
 	}else if(message.member.voiceChannel){music.join(client,message,message.member.voiceChannel);}//User Channel
 	else{//Deafult #Music Channel
