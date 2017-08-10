@@ -4,7 +4,7 @@ const fs = require('fs');
 const prefix = require('./settings.json').prefix;
 
 //Web Client
-require('modules/webClient').run();
+//require('modules/webClient').run();
 
 const util = require('modules/util');
 //console.log(require('modules/util').parseUri('https://www.youtube.com/watch?v=sN8WUtc1W7E&list=PLoVt_E2Bf75HnPfpj7SiJSr_rNP8lPzCA&index=43'));
