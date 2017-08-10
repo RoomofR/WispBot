@@ -6,10 +6,10 @@ module.exports.run = async (client,message,args) => {
 		if(voiceChannel){
 			music.join(message,voiceChannel);
 		}else message.reply(`**Could not find voice channel called:** \`\`\`${args.join(" ")}\`\`\``);
-	}else if(message.member.voiceChannel){music.join(client,message,message.member.voiceChannel);}//User Channel
+	}else if(message.member.voiceChannel){music.join(message,message.member.voiceChannel);}//User Channel
 	else{//Deafult #Music Channel
 		let voiceChannel = message.guild.channels.findAll('type','voice').find((v) => {console.log(v.name); return v.name==="Music"});
-		music.join(client,message,voiceChannel);
+		music.join(message,voiceChannel);
 	}
 }
 
