@@ -6,6 +6,7 @@ const request = require('request');
 
 module.exports.request = async (client,message) => {
 	let query = message.content.replace("<@335953109123596289>", "");
+	query = query.replace("<@300796423107248128>", "");
 
 	var request = app.textRequest(query, {
 		sessionId: message.author.id,
