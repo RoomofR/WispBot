@@ -6,7 +6,7 @@ module.exports.run = async (client,message,args) => {
 	if(args){
 
 		util.parseArgstoID(args, (video) => {
-			if(video.constructor === Array){
+			if(video && video.constructor === Array){
 				music.addToQueue(video,message.author.username,'after',(err) => {
 					if(err) console.error(err);
 					message.channel.send(`Added ${video.length} song${(video.length>1)?"s":""} to queue.`);

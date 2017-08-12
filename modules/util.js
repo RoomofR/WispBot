@@ -22,7 +22,9 @@ module.exports = {
 	splitString:splitString,
 	captionQuoteImage:captionQuoteImage,
 	makeid:makeid,
-	indexShuffle:indexShuffle
+	indexShuffle:indexShuffle,
+	parseISO:parseISO,
+	parseMS:parseMS
 }
 
 function isInteger(x) {return (x | 0) === x;}
@@ -54,32 +56,44 @@ function cropThumbnail(id, callback){
 }
 
 function fetchVideoInfo(id, callback){
+	console.log("[Util] Fetching video info: "+id);
 	request({
 		method: 'GET',
 		uri: 'https://www.googleapis.com/youtube/v3/videos',
 		qs:{
 			id: id,
 			key: process.env.YT_APIKEY,
-			fields: 'items(id,snippet(title,channelTitle))',
-			part: 'id,snippet'
+			fields: 'items(id,snippet(title,channelTitle),contentDetails(duration))',
+			part: 'id,snippet,contentDetails'
 		}
 	},(err,res,body) => {
 		if(err) console.error(err);
-		var json = JSON.parse(body);
-		callback(json.items[0]);
+		var videoData = JSON.parse(body).items[0];
+		if(!videoData){
+			console.log("[Util] Music fetch video info failed! "+id);
+			return callback(null);
+		}
+		console.log(videoData.contentDetails.duration);
+		return callback({
+			id:videoData.id,
+			title:videoData.snippet.title,
+			channelTitle:videoData.snippet.channelTitle,
+			duration:videoData.contentDetails.duration
+		});
+
 	});
 }
 
-//fetchPlaylistInfo('PLoVt_E2Bf75HnPfpj7SiJSr_rNP8lPzCA', ()=>{});
-
 function fetchPlaylistInfo(id,call){
-	
+	console.log("[Util] Fetching playlist info: "+id);
+
 	const parsePlaylistDataToIds = (data) => {
 		ids=[];
-		data.items.forEach((i) => {ids.push({
+		data.items.forEach(i=>{ids.push({
 			"title":i.snippet.title,
 			"id":i.snippet.resourceId.videoId
-		});});
+			})
+		});
 		return ids;
 	};
 
@@ -98,6 +112,7 @@ function fetchPlaylistInfo(id,call){
 		},(err,res,body) => {
 			if(err) {return console.error(err)};
 			var json = JSON.parse(body);
+			if(json.error) return callback(null);
 			return callback(parsePlaylistDataToIds(json),json.nextPageToken,json.pageInfo.totalResults);
 		});
 	};
@@ -107,16 +122,20 @@ function fetchPlaylistInfo(id,call){
 	var pageToken;
 	const getPlaylistIds = (playlistId,callback ) => {
 		getPageIds(id,pageToken,(ids,token,total) => {
+			if(ids==null) return callback(null);
 			numOfIds=total;
 			pageToken=token;
 			playlistIds = playlistIds.concat(ids);
-			if(playlistIds.length < numOfIds)
-				getPlaylistIds(playlistId, (p,call) => {return callback(p,call)});
-			else
-				return callback(playlistIds, null);
+			if(playlistIds.length < numOfIds) getPlaylistIds(playlistId, (p,call) => {return callback(p,call)});
+			else return callback(playlistIds, null);
 		});
 	}
+
 	getPlaylistIds(id,(ids) => {
+		if(ids==null){
+			console.log("[Util] Music fetch playlist info failed! "+id);
+			return call(null);
+		}
 		console.log(`[MUSIC] Found ${ids.length} songs in playlist: ${id}`);
 		return call(ids);
 	});
@@ -124,63 +143,37 @@ function fetchPlaylistInfo(id,call){
 
 function parseArgstoID(args, callback){
 	let id=args.join(" ");
-	console.log("")
 	//Check if youtube url
 	if(new RegExp(youtubeFilters.join("|")).test(id.toLowerCase())){
 		let query = parseUri(id).queryKey;
-		if(query.v){
-			fetchVideoInfo(query.v,(i)=>{
-				return callback({
-					id:i.id,
-					title:i.snippet.title
-				});
-			});
-		}
-		else if(query.list){
-			fetchPlaylistInfo(query.list, (ids => {return callback(ids);}));
-		}
-		else return callback(null);
-		
-	}else{ //Youtube ID
-		//console.log("failed url test");
-		request.get(`http://img.youtube.com/vi/${id}/0.jpg`,(err,res) => {
-			if(res.statusCode == 200){
-				//console.log("youtube id detected");
-				fetchVideoInfo(id,(i)=>{
-					return callback({
-						id:i.id,
-						title:i.snippet.title
-					});
-				});
-			}else if(id.length==34){
-				fetchPlaylistInfo(id, (ids => {return callback(ids);}));
-			}else{
-				request({
-					method: 'GET',
-					uri: 'https://www.googleapis.com/youtube/v3/search',
-					qs:{
-						type: 'video',
-						q:args.join(" "),
-						key: process.env.YT_APIKEY,
-						maxResults:1,
-						fields: 'items(id(videoId),snippet(title))',
-						part: 'snippet'
-					}
-				},(err,res,body) => {
-					//console.log(JSON.parse(body).items[0]);
-					let i = JSON.parse(body).items[0];
-					if(i){
-						//console.log("youtube query detected");
-						return callback({
-							id:i.id.videoId,
-							title:i.snippet.title
-						});
-					}else{
-						//console.log("No youtube video detected");
-						return callback(null);
-					}
-				});
+		if(query.v) fetchVideoInfo(query.v,data=>{return callback(data)});
+		else if(query.list) fetchPlaylistInfo(query.list,datas=>{return callback(datas)});
+		else return callback(null);	
+	}else if(id.length==34){ //Playlist id
+		fetchPlaylistInfo(id,datas=>{return callback(datas)});
+	}else if(id.length==11){ //Video id
+		fetchVideoInfo(id,data=>{return callback(data)});
+	}else{
+		console.log("searching");
+		request({
+			method: 'GET',
+			uri: 'https://www.googleapis.com/youtube/v3/search',
+			qs:{
+				type: 'video',
+				q:args.join(" "),
+				key: process.env.YT_APIKEY,
+				maxResults:1,
+				fields: 'items(id(videoId),snippet(title,channelTitle))',
+				part: 'snippet'
 			}
+		},(err,res,body) => {
+			let data = JSON.parse(body).items[0];
+			if(!data) return callback(null);
+			return callback({
+				id:data.id.videoId,
+				title:data.snippet.title,
+				channelTitle:data.snippet.channelTitle
+			});
 		});
 	}
 }
@@ -216,7 +209,6 @@ function parseUri (str) {
 }
 
 function splitString(str) {
-	//var char = 21;
 	var char = 42;
 	var len = str.length;
 	var lines = [];
@@ -272,9 +264,9 @@ function captionQuoteImage(img,caption,callback) {
 
 function makeid() {
   var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-  for (var i = 0; i < 5; i++)
+  for (var i = 0; i < 3; i++)
     text += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return text;
@@ -290,4 +282,32 @@ function indexShuffle(len){
 		index[i] = t;
 	}
 	return index;
+}
+
+function parseISO(str){
+	let time = [];
+
+	str.match(/[0-9]+/g).forEach(t=>{
+		time.push(`${(t<10)?"0":""}${t}`);
+	});
+	return time.join(":");
+}
+
+function parseMS(ms){
+	let time = [];
+
+	let hours = parseInt((ms/(1000*60*60))%24);
+	(hours>0)?time.push(hours):null;
+
+	let minutes = parseInt((ms/(1000*60))%60);
+	(minutes>0)?time.push(`${(minutes<10)?"0":""}${minutes}`):time.push("00");
+
+	let seconds = parseInt((ms/1000)%60);
+	(seconds>0)?time.push(`${(seconds<10)?"0":""}${seconds}`):time.push("00");
+
+	hours = (hours < 10) ? "0" + hours : hours;
+	minutes = (minutes < 10) ? "0" + minutes : minutes;
+	seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+	return time.join(":");
 }

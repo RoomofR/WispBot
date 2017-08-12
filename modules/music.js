@@ -34,12 +34,19 @@ module.exports = {
 	remove:remove
 }
 
-function initSettings(){
+function initSettings(client){
 	MongoClient.connect(url, (err,db) => {
 		db.collection("settings").findOne({var:"music"},(err,data) => {
 			volume=data.volume;
 		});
 		db.close();
+	});
+
+	client.on("voiceStateUpdate",(a,b) => {
+		if(b.user.bot){
+			console.log("[Music] Bot was moved! VC Changing!");
+			channel = b.voiceChannel;
+		}
 	});
 }
 
@@ -96,12 +103,6 @@ function shuffle(callback){
 	});
 }
 
-/*addToQueue(["meo1a","meo2a","meo3a","meo4a"],"Meow Man",true,(err)=>{
-	console.log("DONE!");
-});*/
-
-//getSongFromQueue(0,true,(video)=>console.log(video));
-
 function addToQueue(video,user,prefix,callback){
 	MongoClient.connect(url, (err,db) => {
 		db.collection("musicqueue").count({},(err,count) => {
@@ -118,7 +119,7 @@ function addToQueue(video,user,prefix,callback){
 						video.forEach((v,i) => {
 							songs.push({
 								index:i,
-								videoID:v.id,
+								id:v.id,
 								title:v.title,
 								user:user
 							});
@@ -134,7 +135,7 @@ function addToQueue(video,user,prefix,callback){
 					video.forEach((v,i) => {
 						songs.push({
 							index:i+count,
-							videoID:v.id,
+							id:v.id,
 							title:v.title,
 							user:user
 						});
@@ -149,7 +150,7 @@ function addToQueue(video,user,prefix,callback){
 				console.log("singles");
 				db.collection("musicqueue").insertOne({
 							index:count,
-							videoID:video.id,
+							id:video.id,
 							title:video.title,
 							user:user
 				},(err)=>{return(callback(err))});
@@ -175,7 +176,11 @@ function getSongFromQueue(index,shift,callback){
 
 function join(msg,vc){
 	msg.channel.send(`Joining **#${vc.name}** voice channel!`);
-	vc.join();
+	console.log(`[Music] Joining ${vc.name}`);
+	vc.join().then(connection => {
+
+	});
+
 	channel=vc;
 }
 
@@ -198,46 +203,71 @@ function leave(msg){
 	channel = null;	
 }
 
-function play(client,msg,videoID,user){
-	let id = videoID;
+function play(client,msg,video,u){
+	console.log(video);
+	let id = video.id;
 	let url = `http://youtu.be/${id}`;
+	let user = u?u:msg.author.username
+	let duration,current;
+
+	const musicEmbed = (video) => {
+		let embed = {
+			color : 7419784,
+			author: {name:"𝙉𝙤𝙬 𝙋𝙡𝙖𝙮𝙞𝙣𝙜..."},
+			title : video.title,
+			description : video.channelTitle,
+			url : url,
+			footer : {text:`0/${duration}   ${user}`},
+			timestamp: new Date(),
+			thumbnail : {url:util.roulette("loading")}
+		};
+		msg.channel.send({embed:embed}).then(async m => {
+			//Thumbnail
+			util.cropThumbnail(id, (thumbnail) => {
+				imgurUploader(thumbnail, {title: id}).then(data => {
+					embed.thumbnail.url = data.link;
+					m.edit({embed:embed});
+				});		
+			});
+
+			const updateTime = () => {
+				if(current!=duration)setTimeout(updateTime,10000);
+				embed.footer.text = `${(current)?current:(util.parseMS((dispatcher)?dispatcher.time:0))}/${duration} | ${user}`;
+				m.edit({embed:embed});
+			}
+			updateTime();
+
+		});
+	}
 
 	let voiceChannel = client.voiceConnections.find('channel',channel);
 	if(voiceChannel){
 
-		util.fetchVideoInfo(videoID, (video) => {
-			let musicEmbed = {
-				color : 7419784,
-				author: {name:"𝙉𝙤𝙬 𝙋𝙡𝙖𝙮𝙞𝙣𝙜..."},
-				title : video.snippet.title,
-				description : video.snippet.channelTitle,
-				url : url,
-				footer : {text:(user)?user:msg.author.username},
-				timestamp: new Date(),
-				thumbnail : {url:util.roulette("loading")}
-			};
-			msg.channel.send({embed:musicEmbed}).then(async m => {
-				//Thumbnail
-				util.cropThumbnail(id, (thumbnail) => {
-					imgurUploader(thumbnail, {title: id}).then(data => {
-						musicEmbed.thumbnail.url = data.link;
-						m.edit({embed:musicEmbed});
-					});		
-				});
+		if(!video.title || !video.channelTitle || !video.duration){
+			util.fetchVideoInfo(id, (newVideo) => {
+				duration = util.parseISO(newVideo.duration);
+				musicEmbed(newVideo);
 			});
-		});
+		}else {
+			duration = util.parseISO(video.duration);
+			musicEmbed(video)
+		};
 
 		const song = ytdl(url, {filter:'audioonly'});
 		dispatcher = voiceChannel.playStream(song, { passes : 5, volume: volume });
+
 		dispatcher.on('end', (end) =>{
 			dispatcher=null;
 			console.log("Song Ended! " + end);
 
+			current = duration;
+
 			if(end === "force_stop") return;
 
-			getSongFromQueue(0,true,(video)=>{
-				if(video)
-					play(client,msg,video.videoID,video.user);
+			getSongFromQueue(0,true,(nextVideo)=>{
+				if(nextVideo){
+					play(client,msg,nextVideo,video.user);
+				}
 			});
 			
 		});
