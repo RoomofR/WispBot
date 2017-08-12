@@ -2,18 +2,7 @@ require('app-module-path').addPath(__dirname);
 const Discord = require('discord.js');
 const fs = require('fs');
 const prefix = require('./settings.json').prefix;
-
-//Web Client
-//require('modules/webClient').run();
-
 const util = require('modules/util');
-//console.log(require('modules/util').parseUri('https://www.youtube.com/watch?v=sN8WUtc1W7E&list=PLoVt_E2Bf75HnPfpj7SiJSr_rNP8lPzCA&index=43'));
-
-//console.log(require('modules/util').parseUri('https://www.youtube.com/playlist?list=PLoVt_E2Bf75HnPfpj7SiJSr_rNP8lPzCA'));
-
-
-//require('modules/util').fetchVideoInfo('5SQhfkpX9bc');
-//require('modules/util').fetchPlaylistInfo('PLoVt_E2Bf75HnPfpj7SiJSr_rNP8lPzCA',(playlist)=>{});
 
 //Client/Modules/Commands
 const client = new Discord.Client();
@@ -22,7 +11,7 @@ client.help = new Discord.Collection();
 client.modules = new Discord.Collection();
 
 //Music
-require('modules/music').initSettings();
+require('modules/music').initSettings(client);
 
 //Load Commands
 fs.readdir("./commands/", (err, files) => {
@@ -92,15 +81,15 @@ client.on('message', async message => {
 	if(message.author.id == 103607047383166976 && message.channel.id==344129749741731840)message.delete();
 
 	//LOG TO CONSOLE
-	console.log("[" + message.channel.guild.name + ":" + message.channel.name + "] " + message.author.username + " : " + message.content);
+	console.log("[" + message.channel.guild.name + ":" + message.channel.name + "] " + message.author.username + " : " + message.content);// + (message.embeds.length>0)?message.embeds.join("=====\n"):null
 
 	if(message.author.bot || message.channel.type === 'dm') return;
 
 	//Sort Media
 	//client.modules.get("media").mediaSort(client,message);
 
-	//AI
-	if(message.content.includes("<@335953109123596289>"))
+	//AI 
+	if(util.contains(message.content,["<@335953109123596289>","<@300796423107248128>"]))
 		client.modules.get("ai").request(client,message);
 
 	//Command Handler
