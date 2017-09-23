@@ -76,7 +76,9 @@ client.on('ready', () => {
 
 client.on('message', async message => {
 	//Debug Mode
-	if(message.guild.id!=264367898150174720 && message.channel.id!=344129749741731840) return;
+	if(message.guild.id!=264367898150174720 && 
+	   message.channel.id!=344129749741731840 && 
+	   message.channel.id!=300787208196194304) return;
 
 	if(message.author.id == 103607047383166976 && message.channel.id==344129749741731840)message.delete();
 
