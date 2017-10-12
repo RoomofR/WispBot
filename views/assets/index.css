@@ -1,0 +1,44 @@
+@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+[class*="fontawesome-"]:before {
+  font-family: 'fontawesome', sans-serif;
+}
+
+@font-face {
+    font-family: Disolve;
+    src: url(Disolve_regular.ttf);
+}
+
+body{
+	background-color: #EEEEEE;
+}
+
+.title{
+	color: #1d1d1d;
+	text-align: center;
+	font-family: Disolve;
+	font-size: 230%;
+}
+
+.youtubePreview{
+	zoom:0.5;
+	-moz-transform: scale(0.5);
+}
+
+#youtubeIcon{
+	background:url('http://img.youtube.com/vi/uJ0hVcraSCk/0.jpg') center no-repeat;
+	width: 480px;
+	height: 268px;
+}
+
+.noSelect{
+	user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;
+}
+
+.playing *{
+	float :left;
+	text-align: center;
+}

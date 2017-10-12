@@ -1,5 +1,5 @@
-const music = require('modules/music');
 module.exports.run = async (client,message,args) => {
+
 	if(args.length>0){
 		let cmd = client.commands.get(`music.${args[0]}`);
 		
@@ -14,7 +14,7 @@ module.exports.run = async (client,message,args) => {
 module.exports.help = {
 	name: "music",
 	description: "For all your music needs.",
-	usage: "/music [join|leave|play|stop|resume|pause|skip|volume]"
+	usage: "/music [bind|join|leave|play|queue|list|skip|loop]"
 }
 
 module.exports.config = {

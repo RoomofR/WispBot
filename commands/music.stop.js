@@ -1,9 +1,8 @@
 const music = require('modules/music');
 const util = require('modules/util');
 module.exports.run = async (client,message,args) => {
-	if(music.getDispatcher()){
-		music.stop();
-		message.channel.send(`Stopping Music...`);
+	if(client.music.get('dispatcher')){
+		music.stop(client,message);
 	}else{
 		message.reply(util.roulette("stop_err"));
 	}
