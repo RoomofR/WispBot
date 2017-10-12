@@ -1,8 +1,9 @@
 module.exports.run = async (client,message,args) => {
-	console.log("Music Skip");
+	console.log("Music Bind");
 }
+
 module.exports.help = {
-	name: "skip",
+	name: "bind",
 	description: "TODO",
 	usage: "TODO"
 }

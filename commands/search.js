@@ -1,31 +1,54 @@
 const util = require('modules/util');
 const ytdl = require('ytdl-core');
+const fetchVideoInfo = require('youtube-info');
 const imgurUploader  = require('imgur-uploader');
 module.exports.run = async (client,message,args) => {
-	util.parseArgstoID(args, (video) => {
-		if(video){
-			let id = video.id.videoId;
+	console.time('function');
+	util.parseArgstoID(args, (id) => {
+		if(id){
 			let url = `http://youtu.be/${id}`;
-
-			let musicEmbed = {
-				color : 7419784,
-				author: {name:video.snippet.title},
-				description : `${video.snippet.channelTitle}    ${id}`,
-				url : url,
-				footer : {text:message.author.username},
-				timestamp: new Date(),
-				thumbnail : {url:null}
-			};
-			message.channel.send({embed:musicEmbed}).then(msg => {
-				util.cropThumbnail(id, (thumbnail) => {
-					imgurUploader(thumbnail, {title: id}).then(data => {
-						musicEmbed.thumbnail.url = data.link;
-						msg.edit({embed:musicEmbed});
-					});		
-				});
+			util.cropThumbnail(id, (thumbnail) => {
+				imgurUploader(thumbnail, {title: id}).then(data => {
+					fetchVideoInfo(id, (err, info) => {
+					if(err) throw new Error(err);
+					//console.log(info);
+						let musicEmbed = {
+							color : 7419784,
+							author: {name:info.title},
+							description : `${info.owner}    ${id}`,
+							url : url,
+							footer : {text:message.author.username},
+							timestamp: new Date(),
+							thumbnail : {url:data.link}
+						};
+						message.channel.send({embed:musicEmbed});
+					});
+				});		
 			});
+			
 		}else{message.reply(`${util.roulette('search_err')} There was nothing found for **${search}**.`);}
 	});
+	
+		
+/*	youtube.searchVideos(search,1)
+		.then(results => {
+			if(results.length>0){
+				let video = results[0];
+				let videoEmbed = {
+					color : 7419784,
+					author: {name:video.title},
+					description : `${video.channel.title}    [${video.id}]`,
+					url : video.url,
+					footer : {text:message.author.username},
+					timestamp: new Date(),
+					thumbnail : {url:`https://i3.ytimg.com/vi/${video.id}/sddefault.jpg`}
+				};
+				message.channel.send({embed:videoEmbed});
+			}else{
+				
+			}
+		}).catch(console.error);*/
+
 }
 
 module.exports.help = {
