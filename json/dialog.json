@@ -27,12 +27,5 @@
 		"freq":1},
 		{"str":"Pausing music...",
 		"freq":11}
-	],
-
-	"loading":[
-		{"str":"http://i.imgur.com/e1wlEdO.gif",
-		"freq":1},
-		{"str":"http://i.imgur.com/EUIOurt.gif",
-		"freq":9}
 	]
 }

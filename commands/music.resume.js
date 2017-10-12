@@ -1,8 +1,7 @@
 const music = require('modules/music');
 module.exports.run = async (client,message,args) => {
-	if(music.isPaused()){
-		music.resume();
-		message.channel.send(`Resuming Song...`);
+	if(!client.music.get('isPlaying')){
+		music.resume(client,message);
 	}else{
 		message.reply("Music is already resumed!");
 	}
@@ -15,5 +14,5 @@ module.exports.help = {
 
 module.exports.config = {
 	enabled: true,
-	aliases: ['>','r']
+	aliases: []
 }
