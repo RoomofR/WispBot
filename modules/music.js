@@ -1,111 +1,314 @@
 module.exports.name = "music";
-const low = require('lowdb');
 const ytdl = require('ytdl-core');
 const imgurUploader  = require('imgur-uploader');
 const util = require('modules/util');
-const musicQueue = low('./json/musicQueue.json');
-musicQueue.defaults({ queue: []}).write();
 
+const mongodb = require('mongodb');
+const MongoClient = require( 'mongodb' ).MongoClient;
+const url = `mongodb://wispbot:${process.env.KEY}@ds131583.mlab.com:31583/wispdb`;
+
+
+var dispatcher = null ;
+var channel = null ;
+var volume = 1;
 
 module.exports = {
+	getDispatcher: () => {return dispatcher},
+	getChannel: () => {return channel},
+	isPaused: () => {return dispatcher.paused},
 
-	initQueue: () => {
-		return musicQueue.get('queue')
-			.sortBy('index')
-			.value();
-	},
+	initSettings:initSettings,
+	addToQueue:addToQueue,
+	getSongFromQueue:getSongFromQueue,
+	join:join,
+	leave:leave,
+	play:play,
+	stop:stop,
+	pause:pause,
+	resume:resume,
+	skip:skip,
+	setVolume:setVolume,
+	list:list,
+	clear:clear,
+	shuffle:shuffle,
+	remove:remove
+}
 
-	addToQueue: (id,user,index) => {
-		musicQueue.get("queue")
-			.push({
-				"id":id,
-				"user":user,
-				"index":index,
-				"time":new Date().getTime()+(dur*1000)
-			})
-			.write();
-		//TODO
-	},
+function initSettings(client){
+	MongoClient.connect(url, (err,db) => {
+		db.collection("settings").findOne({var:"music"},(err,data) => {
+			volume=data.volume;
+		});
+		db.close();
+	});
 
-	join: (client,msg,vc) => {
-		msg.channel.send(`Joining **#${vc.name}** voice channel!`);
-		vc.join();
-		client.music.set('voiceChannel',vc);
-	},
-
-	leave: (client,msg) => {
-		if(client.music.get('voiceChannel')==null){
-			let voiceChannel = msg.guild.channels.findAll('type','voice').find((v) => {console.log(v.name); return v.name==="Music"});
-			voiceChannel.join().then(connection => {
-				connection.disconnect();
-				msg.channel.send(`Leaving **#Music** voice channel!`);
-			});
-
-		}else{
-			client.music.get('voiceChannel').leave();
-			msg.channel.send(`Leaving **${client.music.get('voiceChannel')}** voice channel!`);
+	client.on("voiceStateUpdate",(a,b) => {
+		if(b.user.bot){
+			console.log("[Music] Bot was moved! VC Changing!");
+			channel = b.voiceChannel;
 		}
-		client.music.set('voiceChannel',null);
-	},
+	});
+}
 
-	play: (client,msg,ytid) => {
-		let url = `http://youtu.be/${ytid}`;
-		let voiceChannel = client.voiceConnections.find('channel',client.music.get('voiceChannel'));
-		if(voiceChannel){
+function list(callback){
+	MongoClient.connect(url, (err,db) => {
+		db.collection("musicqueue").find({index:{ $lt: 10 }}).sort({index:1}).toArray((err,results)=>{
 
-			util.cropThumbnail(ytid, (thumbnail) => {
-				imgurUploader(thumbnail, {title: ytid}).then(data => {
-					ytdl.getInfo(url, (err, info) => {
-						console.log(`[Music] Playing ${info.title}`);
-						let musicEmbed = {
-							color : 7419784,
-							author: {name:"𝙉𝙤𝙬 𝙋𝙡𝙖𝙮𝙞𝙣𝙜..."},
-							title : info.title,
-							description : info.author.name,
-							url : url,
-							footer : {text:msg.author.username},
-							timestamp: new Date(),
-							thumbnail : {url:data.link}
-							//thumbnail : thumnail
-						};
-						//msg.channel.send("meow");
-						msg.channel.send({embed:musicEmbed});
+			db.collection("musicqueue").count({},(err,count) => {
+				if(err) return callback(err);
+				return callback(results,count);
+			});
+			
+		});
+	});
+}
+
+function remove(index,callback){
+	console.log(index);
+	getSongFromQueue(parseInt(index)-1,true,(song) => {
+		return(callback(song.title));
+	});
+}
+
+var clearPwd = util.makeid();
+function clear(msg,pwd){
+	if(pwd==clearPwd){
+		console.log("[MUSIC] CLEARNING MUSIC QUEUE!!! "+msg.author.username);
+		msg.channel.send("Clearing queue...").then(m=>{
+			MongoClient.connect(url, (err,db) => {
+				db.collection("musicqueue").deleteMany({},(err)=>{
+					if(err)console.error(err);
+					m.edit(`**${msg.author.username}** has cleared the queue!`);
+				});
+			});
+		});
+	}else{
+		clearPwd = util.makeid();
+		msg.reply(`**Are your sure you want to clear the music queue?**\n If so type the command again with this id: \`\`\`${clearPwd}\`\`\``)
+	}
+}
+
+function shuffle(callback){
+	MongoClient.connect(url, (err,db) => {
+		db.collection('musicqueue').find().sort({index:1}).toArray((err,results)=>{
+			if(err) console.error(err);
+			let total = results.length;
+			let index = util.indexShuffle(total);
+			results.forEach((s,i)=>{
+				db.collection('musicqueue').updateOne({_id:s._id},{$set:{index:index[i]}},(err) => {
+					if(i>=total-1)return callback(total);
+				});	
+			});
+		});
+	});
+}
+
+function addToQueue(video,user,prefix,callback){
+	MongoClient.connect(url, (err,db) => {
+		db.collection("musicqueue").count({},(err,count) => {
+			video["index"]=count;
+
+			if(video.constructor === Array){//Playlist
+				let len = video.length;
+
+				if(prefix="before"){
+					db.collection("musicqueue").updateMany({},{$inc:{index:len}},(err)=>{
+						if(err) console.err(err);
+
+						let songs = []
+						video.forEach((v,i) => {
+							songs.push({
+								index:i,
+								id:v.id,
+								title:v.title,
+								user:user
+							});
+						});
+
+						db.collection("musicqueue").insertMany(songs,(err)=>{return(callback(err))});
+
+					});
+
+				}else{//After
+
+					let songs = []
+					video.forEach((v,i) => {
+						songs.push({
+							index:i+count,
+							id:v.id,
+							title:v.title,
+							user:user
+						});
+					});
+
+					db.collection("musicqueue").insertMany(songs,(err)=>{return(callback(err))});
+				}
+
+			}
+
+			else{//Single Video
+				console.log("singles");
+				db.collection("musicqueue").insertOne({
+							index:count,
+							id:video.id,
+							title:video.title,
+							user:user
+				},(err)=>{return(callback(err))});
+			}
+			
+		});
+	});
+}
+
+function getSongFromQueue(index,shift,callback){
+	MongoClient.connect(url, (err,db) => {
+		db.collection("musicqueue").findOne({index:index},(err,result)=>{
+			if(shift){
+				db.collection("musicqueue").deleteOne({index:index},(err)=>{
+						db.collection("musicqueue").updateMany({index:{$gt:index}},{$inc:{index:-1}},(err)=>{
+						return(callback(result));
 					});
 				});
-				
-			});
+			}else return(callback(result));
+		});
+	});
+}
 
-			const song = ytdl(url, {filter:'audioonly'});
-			let dispatcher = voiceChannel.playStream(song, { passes : 12 });
-			client.music.set('dispatcher',dispatcher);
-			client.music.set('isPlaying',true);
+function join(msg,vc){
+	msg.channel.send(`Joining **#${vc.name}** voice channel!`);
+	console.log(`[Music] Joining ${vc.name}`);
+	vc.join().then(connection => {
 
-			dispatcher.on('end', () =>{
-				client.music.set('dispatcher',null);
-				client.music.set('isPlaying',false);
-				console.log("Song Ended!");
-			});
-		}
-	},
+	});
 
-	stop: (client,msg) => {
-		msg.channel.send(`Stopping Song...`);
-		client.music.get('dispatcher').end();
-		client.music.set('dispatcher',null);
-		console.log("Song Stoped!");
-	},
+	channel=vc;
+}
 
-	pause: (client,msg) => {
-		msg.channel.send(util.roulette("pause"));
-		client.music.get('dispatcher').pause();
-		client.music.set('isPlaying',false);
-		console.log("Song Paused!");
-	},
+function leave(msg){
 
-	resume: (client,msg) => {
-		msg.channel.send(`Resuming Song...`);
-		client.music.get('dispatcher').resume();
-		client.music.set('isPlaying',true);
-		console.log("Song Paused!");
+	if(dispatcher)
+		dispatcher.end('force_stop');
+
+	if(channel==null){
+		let voiceChannel = msg.guild.channels.findAll('type','voice').find((v) => {console.log(v.name); return v.name==="Music"});
+		voiceChannel.join().then(connection => {
+			connection.disconnect();
+			msg.channel.send(`Leaving **#Music** voice channel!`);
+		});
+
+	}else{
+		channel.leave();
+		msg.channel.send(`Leaving **${channel}** voice channel!`);
 	}
+	channel = null;	
+}
+
+function play(client,msg,video,u){
+	console.log(video);
+	let id = video.id;
+	let url = `http://youtu.be/${id}`;
+	let user = u?u:msg.author.username
+	let duration,current;
+
+	const musicEmbed = (video) => {
+		let embed = {
+			color : 7419784,
+			author: {name:"𝙉𝙤𝙬 𝙋𝙡𝙖𝙮𝙞𝙣𝙜..."},
+			title : video.title,
+			description : video.channelTitle,
+			url : url,
+			footer : {text:`0/${duration}   ${user}`},
+			timestamp: new Date(),
+			thumbnail : {url:util.roulette("loading")}
+		};
+		msg.channel.send({embed:embed}).then(async m => {
+			//Thumbnail
+			util.cropThumbnail(id, (thumbnail) => {
+				imgurUploader(thumbnail, {title: id}).then(data => {
+					embed.thumbnail.url = data.link;
+					m.edit({embed:embed});
+				});		
+			});
+
+			const updateTime = () => {
+				if(current!=duration)setTimeout(updateTime,10000);
+				embed.footer.text = `${(current)?current:(util.parseMS((dispatcher)?dispatcher.time:0))}/${duration} | ${user}`;
+				m.edit({embed:embed});
+			}
+			updateTime();
+
+		});
+	}
+
+	let voiceChannel = client.voiceConnections.find('channel',channel);
+	if(voiceChannel){
+
+		if(!video.title || !video.channelTitle || !video.duration){
+			util.fetchVideoInfo(id, (newVideo) => {
+				duration = util.parseISO(newVideo.duration);
+				musicEmbed(newVideo);
+			});
+		}else {
+			duration = util.parseISO(video.duration);
+			musicEmbed(video)
+		};
+
+		const song = ytdl(url, {filter:'audioonly'});
+		dispatcher = voiceChannel.playStream(song, { passes : 5, volume: volume });
+
+		dispatcher.on('end', (end) =>{
+			dispatcher=null;
+			console.log("Song Ended! " + end);
+
+			current = duration;
+
+			if(end === "force_stop") return;
+
+			getSongFromQueue(0,true,(nextVideo)=>{
+				if(nextVideo){
+					play(client,msg,nextVideo,video.user);
+				}
+			});
+			
+		});
+
+		dispatcher.on('error', (err) => {
+			console.error(err);
+		});
+	}
+}
+
+function stop(){
+	dispatcher.end('force_stop');
+}
+
+function skip(){
+	dispatcher.end('skip');
+}
+
+function pause(){
+	dispatcher.pause();
+	console.log("Song Paused!");
+}
+
+function resume(){
+	dispatcher.resume();
+	console.log("Song Resumed!");
+}
+
+function setVolume(msg,vol){
+	if(!vol) return msg.channel.send(`Current volume is set at ${volume * 100}%`);
+		if(vol < 0 || vol > 100) return msg.reply(`Please don't ear rape the others. Enter a value between 0% and 100%.`);
+
+	msg.channel.send(`Setting volume to ${vol}%`).then(()=>{
+		volume = vol / 100;
+		if(dispatcher)
+			dispatcher.setVolume(volume);
+
+		MongoClient.connect(url, (err,db) => {
+			db.collection("settings").updateOne({var:"music"},{$set:{volume:volume}});
+			db.close();
+		});
+
+	});
 }

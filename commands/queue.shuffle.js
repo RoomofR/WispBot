@@ -1,12 +1,17 @@
 const music = require('modules/music');
-
 module.exports.run = async (client,message,args) => {
-	console.log("Music Skip");
-	music.skip();
-	message.channel.send("Skipping song...");
+
+	message.channel.send("Shuffling Queue...").then(m=>{
+		music.shuffle(()=>{
+			m.edit("**Shuffling Complete!**");
+			client.commands.get(`queue.list`).run(client,message,args);
+		});
+	});
+	
 }
+
 module.exports.help = {
-	name: "skip",
+	name: "shuffle",
 	description: "TODO",
 	usage: "TODO"
 }

@@ -1,6 +1,8 @@
 const music = require('modules/music');
 module.exports.run = async (client,message,args) => {
-	music.leave(client,message);
+	if(music.getChannel())
+		music.leave(message);
+	else return message.reply("Can't leave voice channel when there is nothing to leave from!");
 }
 
 module.exports.help = {

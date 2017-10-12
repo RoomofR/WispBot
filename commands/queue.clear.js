@@ -1,13 +1,15 @@
+const music = require('modules/music');
 module.exports.run = async (client,message,args) => {
-	console.log("Music Queue");
+	music.clear(message,args[0]);
 }
+
 module.exports.help = {
-	name: "queue",
+	name: "clear",
 	description: "TODO",
 	usage: "TODO"
 }
 
 module.exports.config = {
 	enabled: true,
-	aliases: []
+	aliases: ['c']
 }
