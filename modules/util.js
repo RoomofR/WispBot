@@ -1,4 +1,4 @@
-module.exports.name = "util";
+/*module.exports.name = "util";
 const request = require('request');
 const sharp = require('sharp');
 const util = require('modules/util');
@@ -8,11 +8,11 @@ const dialog = require("../json/dialog.json");
 const youtubeFilters = ["youtube.com","youtu.be",];
 
 const YouTube = require('simple-youtube-api');
-const youtube = new YouTube(process.env.YT_APIKEY);
+const youtube = new YouTube(process.env.YT_APIKEY);*/
 
 module.exports = {
 
-	roulette: (dialogID) => {
+/*	roulette: (dialogID) => {
 		let roulette = [];
 		let data = dialog[dialogID];
 		data.forEach((v) => {
@@ -95,5 +95,5 @@ module.exports = {
 				}
 			})
 		}
-	}
+	}*/
 }
