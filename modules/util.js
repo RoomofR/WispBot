@@ -12,7 +12,11 @@ const youtube = new YouTube(process.env.YT_APIKEY);*/
 
 module.exports = {
 
-/*	roulette: (dialogID) => {
+	meow: () => {
+		console.log("MEOW");
+	},
+
+	roulette: (dialogID) => {
 		let roulette = [];
 		let data = dialog[dialogID];
 		data.forEach((v) => {
@@ -23,6 +27,10 @@ module.exports = {
 		return roulette[Math.floor(Math.random()*roulette.length)];
 	},
 
+	matches: (arr,str) => {
+		return new RegExp(arr.join("|")).test(str);
+	}
+/*
 	cropThumbnail: (id, callback) => {
 		snekfetch.get(`https://img.youtube.com/vi/${id}/0.jpg`)
 			.then(r => {
