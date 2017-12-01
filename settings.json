@@ -1,6 +1,7 @@
 {
 	"owner":"181114372872077313",
 	"prefix": "/",
+	"textChannel": ["wisp_bot"],
 	"streamOptions": {
 		"seek":0,
 		"volume":1,

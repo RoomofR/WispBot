@@ -4,12 +4,13 @@
   "description": "Wisp Bot",
   "main": "main.js",
   "scripts": {
-  	"setup":"npm install --global --production windows-build-tools && npm i --save",
+    "setup": "npm install --global --production windows-build-tools && npm i --save",
     "dev": "set NODE_ENV=dev&& supervisor -w commands,modules,main.js -s main.js"
   },
   "dependencies": {
     "app-module-path": "^2.2.0",
     "discord.js": "^11.2.1",
+    "ffmpeg-binaries": "^3.2.2-3",
     "socket.io": "^2.0.4",
     "supervisor": "^0.12.0"
   },
