@@ -1,4 +1,4 @@
-const http = require('http');
+/*const http = require('http');
 
 const mongodb = require('mongodb');
 const MongoClient = require( 'mongodb' ).MongoClient;
@@ -59,4 +59,4 @@ module.exports.help = {
 module.exports.config = {
 	enabled: true,
 	aliases: ['p']
-}
+}*/
