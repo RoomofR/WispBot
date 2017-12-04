@@ -9,5 +9,5 @@ module.exports = {
 }
 
 async function run(client,message,args){
-	console.log("TEST",message);
+	console.log(`TODO COMMAND : ${this.name.toUpperCase()} test function`.warn());
 }
