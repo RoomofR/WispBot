@@ -1,6 +1,6 @@
 module.exports = {
-	enabled: false,
-	name: "template",
+	enabled: true,
+	name: "join",
 	aliases: [],
 	users: [],
 	description: "TODO",

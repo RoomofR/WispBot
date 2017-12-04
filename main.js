@@ -23,9 +23,15 @@ fs.readdir("./commands/", (err, files) => {
 	let template = require(`./commands/_template.js`);
 	jsfiles.forEach((f,i) => {
 		let props = require(`./commands/${f}`);
+		//ERROR Command Checks
 		if(!util.compareKeys(template,props)){console.error(`|Failed to load command ${i}:${f} because KEYS are NOT set!`.error());return}
 		if(!props.enabled){disabled++;console.error(`|Disabled to command ${i}:${f}`.error());return}
 		if(client.commands[props.name]){console.error(`|Failed to load command ${i}:${f} because NAME is already been used!`.error());return}
+		
+		//WARN Command Checks
+		if(props.usage == "TODO" || props.usage == "")console.warn(`|Missing USAGE for ${i}:${f}`.color('yellow'));
+		if(props.description == "TODO" || props.description == "")console.warn(`|Missing DESC for ${i}:${f}`.color('yellow'));
+
 		let cmdInfo = {
 			name:props.name,
 			run: props.run,
