@@ -7,7 +7,6 @@ if (process.env.NODE_ENV !== 'production') {require('dotenv').load();}
 const fs = require('fs');
 require('app-module-path').addPath(__dirname);
 const util = require('modules/util');
-
 const Discord = require("discord.js");
 
 //Client Collections
@@ -28,6 +27,7 @@ fs.readdir("./commands/", (err, files) => {
 		if(!props.enabled){disabled++;return}
 		if(client.commands[props.name]){console.error(`|Failed to load command ${i}:${f} because NAME is already been used!`.error());return}
 		let cmdInfo = {
+			name:props.name,
 			run: props.run,
 			users: props.users,
 			aliases: props.aliases,
@@ -57,6 +57,19 @@ fs.readdir("./events/", (err, files) => {
 	});
 	console.log('\x1b[36m%s\x1b[0m',`Loaded ${jsfiles.length} events!`);
 });
+
+//Debug Utilities
+Discord.Client.prototype.debugMessage = function(debugMsg){
+	if(!debugMsg) return;
+	this.channels.find("id","385957465239322630").send(debugMsg).then(msg => {
+		let messageArray = msg.content.split(" ");
+		let command = messageArray[0];
+		let args = messageArray.slice(1);
+		if(!command.startsWith("/")) return;
+		let cmd = this.commands[command.slice("/".length)]
+		if(cmd) cmd.run(this,msg,args);
+	});
+}
 
 //Login
 client.login(process.env.TOKEN);
