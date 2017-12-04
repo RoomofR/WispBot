@@ -1,34 +1,34 @@
-module.exports.run = async (client,message,args) => {
-	if(!args[0]){
-		message.channel.send(`= Command List =\n\n[Use /help <command> for details]\n\n${client.help.map(c=>
-		   `${c.help.name} :: ${c.help.description}`).join("\n")}`,
-			{code:"asciidoc"});
-	}
+module.exports = {
+	enabled: true,
+	name: "help",
+	aliases: ["h"],
+	users: [],
+	description: "The all mighty help command!",
+	usage: "/help <command>",
+	run: run
+}
+var helpTexts='';
+async function run(client,message,args){
+	if(!args[0])
+		message.channel.send(`= Command List =\n\n[Use /help <command> for details]\n\n${getHelpText(client)}`,{code:"asciidoc"});
 	else{
 		let command = args[0];
-		if(client.commands.has(command)){
-			command = client.commands.get(command);
-			let helpText = `= ${command.help.name} = \n${command.help.description}\nussage :: ${command.help.usage}\n${(command.config.aliases.length>0) ? `aliases :: ${(command.config.aliases).join(" ")}`:""}`;
-
-			if(command.config.subCommands != null && command.config.subCommands.length > 0){
-				helpText += '\nSubCommands ::'
-				command.config.subCommands.forEach((s,i) => {
-					helpText += `\n${s.split('.')[1]}`;
-				})
-			}
-
+		if(typeof client.commands[command] != 'undefined'){
+			command=client.commands[command];
+			let helpText = `= ${command.name} = \n${command.description}\nusage :: ${command.usage}\n${(command.aliases.length>0) ? `aliases :: ${(command.aliases).join(" ")}`:""}`;
 			message.channel.send(helpText,{code:"asciidoc"});
-		}
+		}else message.reply("No command named:```"+command+"```");
 	}
 }
 
-module.exports.help = {
-	name: "help",
-	description: "The all mighty help command!",
-	usage: "/help [command]"
-}
-
-module.exports.config = {
-	enabled: true,
-	aliases: ["h"]
+function getHelpText(client){
+	if(helpTexts) return helpTexts
+	let currentCmd;
+	Object.keys(client.commands).forEach((name,i) => {
+		let cmd = client.commands[name];
+		if(typeof currentCmd!='undefined' && currentCmd.aliases == cmd.aliases)return;
+		helpTexts+=`${name} :: ${cmd.description}\n`;
+		currentCmd=cmd;
+	})
+	return helpTexts;
 }

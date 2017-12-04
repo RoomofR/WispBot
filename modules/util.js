@@ -1,4 +1,4 @@
-module.exports.name = "util";
+/*module.exports.name = "util";
 const request = require('request');
 const sharp = require('sharp');
 const util = require('modules/util');
@@ -8,9 +8,17 @@ const dialog = require("../json/dialog.json");
 const youtubeFilters = ["youtube.com","youtu.be",];
 
 const YouTube = require('simple-youtube-api');
-const youtube = new YouTube(process.env.YT_APIKEY);
+const youtube = new YouTube(process.env.YT_APIKEY);*/
+
+String.prototype.matches = function(arr) {
+	return new RegExp(arr.join("|")).test(this);
+};
 
 module.exports = {
+
+	meow: () => {
+		console.log("MEOW");
+	},
 
 	roulette: (dialogID) => {
 		let roulette = [];
@@ -23,6 +31,16 @@ module.exports = {
 		return roulette[Math.floor(Math.random()*roulette.length)];
 	},
 
+	matches: (arr,str) => {
+		return new RegExp(arr.join("|")).test(str);
+	},
+
+	compareKeys: (a, b) => {
+  		let aKeys = Object.keys(a).sort();
+  		let bKeys = Object.keys(b).sort();
+  		return JSON.stringify(aKeys) === JSON.stringify(bKeys);
+	}
+/*
 	cropThumbnail: (id, callback) => {
 		snekfetch.get(`https://img.youtube.com/vi/${id}/0.jpg`)
 			.then(r => {
@@ -36,38 +54,6 @@ module.exports = {
 				});
 			});
 	},
-
-	//#################################
-	//DEPRECATED=======================
-	isYoutubeURL: (str) => {
-		return new RegExp(youtubeFilters.join("|")).test(str);
-	},
-	//=================================
-	//#################################
-	//DEPRECATED=======================
-	isYoutubeID: (id,callback) => {
-		request.get(`http://img.youtube.com/vi/${id}/0.jpg`,(err,res) => {
-			if(res.statusCode == 404)return callback(false);
-			else return callback(true);
-		});
-	},
-	//=================================
-	//#################################
-	//DEPRECATED=======================
-	search_video: (query, callback) => {
-		request("https://www.googleapis.com/youtube/v3/search?part=id&type=video&q="+encodeURIComponent(query)+"&key="+process.env.YT_APIKEY, function(err,res,body){
-			var json = JSON.parse(body);
-			callback(json.items[0].id.videoId);
-		});
-	},
-	//=================================
-	//#################################
-	//DEPRECATED=======================
-	getYoutubeID: (url, callback) => {
-		return callback(getYoutubeID(url));
-	},
-	//=================================
-	//#################################
 
 	parseArgstoID: (args, callback) => {
 		let id=args[0];
@@ -95,5 +81,5 @@ module.exports = {
 				}
 			})
 		}
-	}
+	}*/
 }

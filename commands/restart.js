@@ -1,15 +1,14 @@
-module.exports.run = async (client,message,args) => {
-	console.log("Restarting!!!");
-	process.exit(0);
-}
-
-module.exports.help = {
-	name: "restart",
-	description: "Restarts Bot.",
-	usgae: "/r OR /restart"
-}
-
-module.exports.config = {
+module.exports = {
 	enabled: true,
-	aliases: ["r"]
+	name: "restart",
+	aliases: ["r"],
+	users: ["181114372872077313"],
+	description: "Restarts Bot.",
+	usage: "/r OR /restart",
+	run: run
+}
+
+async function run(client,message,args){
+	console.log("Restarting!!!".bgColor("red"));
+	process.exit(0);
 }
