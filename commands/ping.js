@@ -1,25 +1,19 @@
 module.exports = {
 	enabled: true,
-	name: "restart",
-	aliases: ["r"],
-	users: ["181114372872077313"],
-	description: "Restarts Bot.",
-	usage: "/r OR /restart",
+	name: "ping",
+	aliases: ["pi"],
+	users: [],
+	description: "Pings Bot!",
+	usage: "/ping",
 	run: run
 }
 
+const http = require('http');
+//const mongodb = require('mongodb');
+//const MongoClient = require( 'mongodb' ).MongoClient;
+//const url = `mongodb://wispbot:${process.env.KEY}@ds131583.mlab.com:31583/wispdb`;
+
 async function run(client,message,args){
-	console.log("Restarting!!!".bgColor("red"));
-	process.exit(0);
-}
-
-/*const http = require('http');
-
-const mongodb = require('mongodb');
-const MongoClient = require( 'mongodb' ).MongoClient;
-const url = `mongodb://wispbot:${process.env.KEY}@ds131583.mlab.com:31583/wispdb`;
-
-module.exports.run = async (client,message,args) => {
 	let pingEmbed = {
 		color: 7419784,
 		timestamp: new Date(),
@@ -39,21 +33,21 @@ module.exports.run = async (client,message,args) => {
 			}
 		]
 	};
-	message.channel.send({embed:pingEmbed}).then(async msg => {
+
+	message.channel.send("pong",{embed:pingEmbed}).then(async msg => {
 
 		//Bot Client
-		//const m = await message.channel.send("PONG");
 		pingEmbed.fields[0].value=`Latency: ${(msg.createdTimestamp - message.createdTimestamp)}ms   API: ${client.ping}ms`;
 		msg.edit({embed:pingEmbed});
 
 		//Bot Database
-		let dbstart = new Date();
+		/*let dbstart = new Date();
 		MongoClient.connect(url, function( err, db ) {
 			if(err) pingEmbed.fields[1].value="FAILED CONNECTION!!!";
 			else pingEmbed.fields[1].value=`${new Date() - dbstart}ms`;
 			msg.edit({embed:pingEmbed});
 			db.close();
-		});
+		});*/
 
 		//Bot Web
 		let webstart = new Date();
@@ -64,14 +58,3 @@ module.exports.run = async (client,message,args) => {
 
 	});
 }
-
-module.exports.help = {
-	name: "ping",
-	description: "Pings Bot!",
-	usage: "/ping"
-}
-
-module.exports.config = {
-	enabled: true,
-	aliases: ['p']
-}*/
