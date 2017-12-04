@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "setup": "npm install --global --production windows-build-tools && npm i --save",
-    "dev": "set NODE_ENV=dev&& supervisor -w commands,events,modules,main.js -s main.js"
+    "dev": "set NODE_ENV=dev&& supervisor -w events,modules,commands,main.js -s main.js"
   },
   "dependencies": {
     "app-module-path": "^2.2.0",
