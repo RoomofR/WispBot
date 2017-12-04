@@ -20,13 +20,13 @@ exports.run = async (client,message) => {
 	//Get Command Object from Client.Commands
 	if(!command.startsWith(settings.prefix)) return;
 	let cmd = client.commands[command.slice(settings.prefix.length)]
-
+	if(!cmd) return;
+	
 	//User Permissions Check
 	if(cmd.users.length!=0 && !message.author.id.matches(cmd.users)) {
 		message.reply('```Sorry you dont have permissions to use the '+command.toUpperCase()+' command!```');
 		return;
 	}
-
 	//Run Command
 	if(cmd) cmd.run(client,message,args);
 }

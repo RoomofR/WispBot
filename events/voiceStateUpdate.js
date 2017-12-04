@@ -1,7 +1,5 @@
 exports.run = async (client,oldUser,newUser) => {
-/*	console.log(`${oldUser.user.username} :: ${oldUser.voiceChannel.name ? oldUser.voiceChannel.name : "None"} --> ${newUser.voiceChannel.name ? newUser.voiceChannel.name : "None"}`);
-*/
-	
+	if(oldUser.user.bot) return;
 	let embed = {
 		color: 7419784,
 		author: {
