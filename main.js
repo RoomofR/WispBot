@@ -14,6 +14,7 @@ const Discord = require("discord.js");
 //Client Collections
 const client = new Discord.Client();
 client.commands = {};
+client.music = require('modules/music');
 
 //Load Commands
 fs.readdir("./commands/", (err, files) => {
