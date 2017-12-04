@@ -60,3 +60,7 @@ String.prototype.reset = function() {
 String.prototype.error = function() {
 	return this.color('red');
 };
+
+String.prototype.warn = function() {
+	return this.color('orange');
+};

@@ -31,8 +31,8 @@ fs.readdir("./commands/", (err, files) => {
 		if(client.commands[props.name]){console.error(`|Failed to load command ${i}:${f} because NAME is already been used!`.error());return}
 		
 		//WARN Command Checks
-		if(props.usage == "TODO" || props.usage == "")console.warn(`|Missing USAGE for ${i}:${f}`.color('yellow'));
-		if(props.description == "TODO" || props.description == "")console.warn(`|Missing DESC for ${i}:${f}`.color('yellow'));
+		if(props.usage == "TODO" || props.usage == "")console.warn(`|Missing USAGE for ${i}:${f}`.warn());
+		if(props.description == "TODO" || props.description == "")console.warn(`|Missing DESC for ${i}:${f}`.warn());
 
 		let cmdInfo = {
 			name:props.name,
@@ -71,7 +71,7 @@ Discord.Client.prototype.debugMessage = function(debugMsg){
 	if(!debugMsg) return;
 	this.channels.find("id","385957465239322630").send(debugMsg).then(msg => {
 		let messageArray = msg.content.split(" ");
-		let command = messageArray[0];
+		let command = messageArray[0].toLowerCase();
 		let args = messageArray.slice(1);
 		if(!command.startsWith("/")) return;
 		let cmd = this.commands[command.slice("/".length)]
