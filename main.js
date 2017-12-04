@@ -1,7 +1,9 @@
 //Env Setup
 const clc = require('./modules/clc');
-console.log(Array(42).join("="),'\n',`Process is being run in ${process.env.NODE_ENV.toUpperCase()} mode!`.bgColor('cyan'));
 if (process.env.NODE_ENV !== 'production') {require('dotenv').load();}
+else clc.clear();
+console.log(Array(42).join("="),'\n',`Process is being run in ${process.env.NODE_ENV.toUpperCase()} mode!`.bgColor('cyan'));
+
 
 //Required Modules
 const fs = require('fs');

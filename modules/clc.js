@@ -26,6 +26,11 @@ const colors = {
 	"bgWhite" : "\x1b[47m"
 }
 
+module.exports.clear = ()=>{
+	for(i in colors)
+		colors[i]="";
+}
+
 String.prototype.meow = function(test) {
 	return(this+test);
 };
