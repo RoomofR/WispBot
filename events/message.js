@@ -14,7 +14,7 @@ exports.run = async (client,message) => {
 
 	//Split and Format Command and Arguments
 	let messageArray = message.content.split(" ");
-	let command = messageArray[0];
+	let command = messageArray[0].toLowerCase();
 	let args = messageArray.slice(1);
 
 	//Get Command Object from Client.Commands
