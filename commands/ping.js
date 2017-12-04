@@ -19,7 +19,6 @@ async function run(client,message,args){
 		timestamp: new Date(),
 		author: {
 		name: "Wisp Bot [Ping Diagnostics]",
-		//icon_url: "https://image.flaticon.com/icons/png/128/149/149387.png"
 		},
 		fields: [
 			{
