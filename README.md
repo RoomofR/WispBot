@@ -1,1 +1,1 @@
-Wisp Bot 2.0
+Wisp Bot 3.0 (Experimental)
