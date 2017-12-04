@@ -24,7 +24,7 @@ fs.readdir("./commands/", (err, files) => {
 	jsfiles.forEach((f,i) => {
 		let props = require(`./commands/${f}`);
 		if(!util.compareKeys(template,props)){console.error(`|Failed to load command ${i}:${f} because KEYS are NOT set!`.error());return}
-		if(!props.enabled){disabled++;return}
+		if(!props.enabled){disabled++;console.error(`|Disabled to command ${i}:${f}`.error());return}
 		if(client.commands[props.name]){console.error(`|Failed to load command ${i}:${f} because NAME is already been used!`.error());return}
 		let cmdInfo = {
 			name:props.name,
