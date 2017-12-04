@@ -1,3 +1,18 @@
+module.exports = {
+	enabled: true,
+	name: "restart",
+	aliases: ["r"],
+	users: ["181114372872077313"],
+	description: "Restarts Bot.",
+	usage: "/r OR /restart",
+	run: run
+}
+
+async function run(client,message,args){
+	console.log("Restarting!!!".bgColor("red"));
+	process.exit(0);
+}
+
 /*const http = require('http');
 
 const mongodb = require('mongodb');

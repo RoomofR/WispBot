@@ -8,7 +8,7 @@ module.exports = {
 	run: run
 }
 
-function run(client,message,args){
+async function run(client,message,args){
 	console.log("Restarting!!!".bgColor("red"));
 	process.exit(0);
 }
