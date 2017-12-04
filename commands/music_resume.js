@@ -1,10 +1,10 @@
 module.exports = {
-	enabled: false,
-	name: "template",
-	aliases: [],
+	enabled: true,
+	name: "resume",
+	aliases: ["res",">"],
 	users: [],
-	description: "TODO",
-	usage: "TODO",
+	description: "Resumes the current song.",
+	usage: "/resume",
 	run: run
 }
 

@@ -1,10 +1,10 @@
 module.exports = {
-	enabled: false,
-	name: "template",
-	aliases: [],
+	enabled: true,
+	name: "skip",
+	aliases: ["sk",">>"],
 	users: [],
-	description: "TODO",
-	usage: "TODO",
+	description: "Skips current song, and plays next in queue.",
+	usage: "/skip",
 	run: run
 }
 

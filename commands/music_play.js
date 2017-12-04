@@ -1,10 +1,10 @@
 module.exports = {
-	enabled: false,
-	name: "template",
-	aliases: [],
+	enabled: true,
+	name: "play",
+	aliases: ["p"],
 	users: [],
-	description: "TODO",
-	usage: "TODO",
+	description: "Plays a youtube video in the voice channel.",
+	usage: "/play [Youtube URL|ID|Search Terms]",
 	run: run
 }
 

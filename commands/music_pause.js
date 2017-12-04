@@ -1,10 +1,10 @@
 module.exports = {
-	enabled: false,
-	name: "template",
-	aliases: [],
+	enabled: true,
+	name: "pause",
+	aliases: ["||","="],
 	users: [],
-	description: "TODO",
-	usage: "TODO",
+	description: "Pauses the current song.",
+	usage: "/pause",
 	run: run
 }
 

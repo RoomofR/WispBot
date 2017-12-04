@@ -1,10 +1,10 @@
 module.exports = {
-	enabled: false,
-	name: "template",
-	aliases: [],
+	enabled: true,
+	name: "queue",
+	aliases: ["q"],
 	users: [],
-	description: "TODO",
-	usage: "TODO",
+	description: "Queues a song to list.",
+	usage: "/queue [Youtube URL|ID|Search Terms]",
 	run: run
 }
 

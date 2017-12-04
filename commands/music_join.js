@@ -1,10 +1,10 @@
 module.exports = {
 	enabled: true,
 	name: "join",
-	aliases: [],
+	aliases: ["j","mj"],
 	users: [],
-	description: "TODO",
-	usage: "TODO",
+	description: "Joins voice channel.",
+	usage: "/join <Voice Channel Name>",
 	run: run
 }
 

@@ -1,10 +1,10 @@
 module.exports = {
-	enabled: false,
-	name: "template",
-	aliases: [],
+	enabled: true,
+	name: "leave",
+	aliases: ["l","goaway"],
 	users: [],
-	description: "TODO",
-	usage: "TODO",
+	description: "Leaves voice channel.",
+	usage: "/leave",
 	run: run
 }
 

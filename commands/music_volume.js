@@ -1,10 +1,10 @@
 module.exports = {
-	enabled: false,
-	name: "template",
+	enabled: true,
+	name: "volume",
 	aliases: [],
 	users: [],
-	description: "TODO",
-	usage: "TODO",
+	description: "Adjusts volume of music.",
+	usage: "/volume [0-100]",
 	run: run
 }
 
