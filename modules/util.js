@@ -10,9 +10,15 @@ const youtubeFilters = ["youtube.com","youtu.be",];
 const YouTube = require('simple-youtube-api');
 const youtube = new YouTube(process.env.YT_APIKEY);*/
 
-String.prototype.matches = function(arr) {
-	return new RegExp(arr.join("|")).test(this);
-};
+String.prototype.matches = function(arr) {return new RegExp(arr.join("|")).test(this)}
+
+String.prototype.makeId = function(len) {
+	var text = "",possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	for (var i = 0; i < len; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
+	return text;
+}
+
+Number.prototype.isInteger = function() {return (this | 0) === this}
 
 module.exports = {
 

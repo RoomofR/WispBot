@@ -13,6 +13,7 @@ const Discord = require("discord.js");
 
 //Client Collections
 const client = new Discord.Client();
+client.db = require('modules/db');
 client.commands = {};
 
 //Load Commands
